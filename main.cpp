@@ -72,7 +72,20 @@ int main()
 		glClearColor(0.576f, 0.922f, 0.878f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		// Camera View
+		glm::mat4 view;
+		view = glm::lookAt(
+			glm::vec3(0.0f, 0.0f, 5.0f), // Camera Position
+			glm::vec3(0.0f, 0.0f, 0.0f), // Target Position
+			glm::vec3(0.0f, 1.0f, 0.0f)  // World-Space Up Vector
+		);
+		glm::mat4 model = glm::mat4(1.0f);
+		glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+
 		glUseProgram(colorShader);
+		glUniformMatrix4fv(glGetUniformLocation(colorShader, "view"), 1, GL_FALSE, &view[0][0]);
+		glUniformMatrix4fv(glGetUniformLocation(colorShader, "model"), 1, GL_FALSE, &model[0][0]);
+		glUniformMatrix4fv(glGetUniformLocation(colorShader, "projection"), 1, GL_FALSE, &projection[0][0]);
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 

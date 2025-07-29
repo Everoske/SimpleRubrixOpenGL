@@ -12,9 +12,17 @@
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
+float lastX;
+float lastY;
+
+float deltaTime;
+float lastFrame;
+
 void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 unsigned int createShaderProgram(const char* vertexPath, const char* fragmentPath);
 void loadShaderCode(const char* shaderPath, std::string& code);
+void mouseCallback(GLFWwindow* window, double xPosInput, double yPosInput);
+void processDeltaTime();
 
 int main()
 {
@@ -69,6 +77,8 @@ int main()
 
 	while (!glfwWindowShouldClose(window))
 	{
+		processDeltaTime();
+
 		glClearColor(0.576f, 0.922f, 0.878f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -179,4 +189,16 @@ void loadShaderCode(const char* shaderPath, std::string& code)
 	{
 		std::cout << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ" << std::endl;
 	}
+}
+
+void mouseCallback(GLFWwindow* window, double xPosInput, double yPosInput)
+{
+
+}
+
+void processDeltaTime()
+{
+	float currentFrame = static_cast<float>(glfwGetTime());
+	deltaTime = currentFrame - lastFrame;
+	lastFrame = currentFrame;
 }

@@ -35,8 +35,8 @@ private:
 		// Rotate yaw vector (0, 0, pitchPos.y) about y-axis by current yaw converted to radians
 		glm::vec3 yawPos = glm::vec3(glm::sin(glm::radians(yaw)) * pitchPos.z, 0, glm::cos(glm::radians(yaw)) * pitchPos.z);
 
-		// Add vectors to get position of camera at current yaw and pitch
-		position = pitchPos + yawPos;
+		// Get x and y from yaw and y from pitch
+		position = glm::vec3(yawPos.z, pitchPos.y, yawPos.z);
 	}
 };
 

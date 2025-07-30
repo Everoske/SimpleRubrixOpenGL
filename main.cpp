@@ -18,9 +18,11 @@ OrbitCamera camera = OrbitCamera();
 
 float lastX;
 float lastY;
+float cameraSpeed = 5.0f;
+bool mouseInitialized = false;
 
-float deltaTime;
-float lastFrame;
+float deltaTime = 0.0f;
+float lastFrame = 0.0f;
 
 void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 unsigned int createShaderProgram(const char* vertexPath, const char* fragmentPath);
@@ -47,6 +49,9 @@ int main()
 
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
+	glfwSetCursorPosCallback(window, mouseCallback);
+
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
@@ -79,8 +84,6 @@ int main()
 	glUseProgram(colorShader);
 	glUniform3f(glGetUniformLocation(colorShader, "cubeColor"), 1.0f, 0.675f, 0.0f);
 
-	
-
 	while (!glfwWindowShouldClose(window))
 	{
 		processDeltaTime();
@@ -89,7 +92,6 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// Camera View
-		camera.processRotationInput(15.0f * deltaTime, 45.0f * deltaTime);
 		glm::mat4 view = camera.getViewMatrix();
 		//view = glm::lookAt(
 		//	glm::vec3(0.0f, 0.0f, 5.0f), // Camera Position
@@ -201,7 +203,23 @@ void loadShaderCode(const char* shaderPath, std::string& code)
 
 void mouseCallback(GLFWwindow* window, double xPosInput, double yPosInput)
 {
+	float xPos = static_cast<float>(xPosInput);
+	float yPos = static_cast<float>(yPosInput);
 
+	if (!mouseInitialized)
+	{
+		lastX = xPos;
+		lastY = yPos;
+		mouseInitialized = true;
+	}
+
+	float xOffset = (xPos - lastX) * cameraSpeed * deltaTime;
+	float yOffset = (lastY - yPos) * cameraSpeed * deltaTime;
+
+	lastX = xPos;
+	lastY = yPos;
+
+	camera.processRotationInput(xOffset, yOffset);
 }
 
 void processDeltaTime()

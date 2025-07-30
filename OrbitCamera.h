@@ -26,11 +26,11 @@ public:
 		return glm::lookAt(position, targetPosition, worldUp);
 	}
 
-	void processRotationInput(float pitchInput, float yawInput)
+	void processRotationInput(float yawInput, float pitchInput)
 	{
+		yaw += yawInput;
 		pitch += pitchInput;
 		pitch = glm::clamp(pitch, -90.0f, 90.0f);
-		yaw += yawInput;
 		calculatePosition();
 	}
 

@@ -26,6 +26,9 @@
     <None Include="colorShader.frag" />
     <None Include="colorShader.vert" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="OrbitCamera.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>

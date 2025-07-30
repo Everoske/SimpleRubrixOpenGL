@@ -15,8 +15,29 @@ class OrbitCamera
 {
 public:
 
-private:
+	void processRotationInput(float pitchInput, float yawInput)
+	{
+		pitch += glm::clamp(pitchInput, -90.0f, 90.0f);
+		yaw += yawInput;
+	}
 
+private:
+	float orbitDist;
+	float pitch;
+	float yaw;
+	glm::vec3 position;
+	
+	void calculatePosition()
+	{
+		// Rotate pitch vector (0, 0, orbitDist) about x-axis by current pitch converted to radians
+		glm::vec3 pitchPos = glm::vec3(0, -glm::sin(glm::radians(pitch)) * orbitDist, glm::cos(glm::radians(pitch)) * orbitDist);
+		
+		// Rotate yaw vector (0, 0, pitchPos.y) about y-axis by current yaw converted to radians
+		glm::vec3 yawPos = glm::vec3(glm::sin(glm::radians(yaw)) * pitchPos.z, 0, glm::cos(glm::radians(yaw)) * pitchPos.z);
+
+		// Add vectors to get position of camera at current yaw and pitch
+		position = pitchPos + yawPos;
+	}
 };
 
 

@@ -9,8 +9,12 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "OrbitCamera.h"
+
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
+
+OrbitCamera camera = OrbitCamera();
 
 float lastX;
 float lastY;
@@ -75,6 +79,8 @@ int main()
 	glUseProgram(colorShader);
 	glUniform3f(glGetUniformLocation(colorShader, "cubeColor"), 1.0f, 0.675f, 0.0f);
 
+	
+
 	while (!glfwWindowShouldClose(window))
 	{
 		processDeltaTime();
@@ -83,12 +89,14 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// Camera View
-		glm::mat4 view;
-		view = glm::lookAt(
-			glm::vec3(0.0f, 0.0f, 5.0f), // Camera Position
-			glm::vec3(0.0f, 0.0f, 0.0f), // Target Position
-			glm::vec3(0.0f, 1.0f, 0.0f)  // World-Space Up Vector
-		);
+		camera.processRotationInput(15.0f * deltaTime, 45.0f * deltaTime);
+		glm::mat4 view = camera.getViewMatrix();
+		//view = glm::lookAt(
+		//	glm::vec3(0.0f, 0.0f, 5.0f), // Camera Position
+		//	glm::vec3(0.0f, 0.0f, 0.0f), // Target Position
+		//	glm::vec3(0.0f, 1.0f, 0.0f)  // World-Space Up Vector
+		//);
+
 		glm::mat4 model = glm::mat4(1.0f);
 		glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 

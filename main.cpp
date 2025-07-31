@@ -122,6 +122,45 @@ int main()
 	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+
+	const float cubeSeparation = 0.6f;
+
+	glm::vec3 cubePositions[] =
+	{
+		// Top cubes
+		glm::vec3(0.0f, cubeSeparation, 0.0f),
+		glm::vec3(cubeSeparation, cubeSeparation, 0.0f),
+		glm::vec3(-cubeSeparation, cubeSeparation, 0.0f),
+		glm::vec3(0.0f, cubeSeparation, -cubeSeparation),
+		glm::vec3(cubeSeparation, cubeSeparation, -cubeSeparation),
+		glm::vec3(-cubeSeparation, cubeSeparation, -cubeSeparation),
+		glm::vec3(0.0f, cubeSeparation, cubeSeparation),
+		glm::vec3(cubeSeparation, cubeSeparation, cubeSeparation),
+		glm::vec3(-cubeSeparation, cubeSeparation, cubeSeparation),
+
+		// Middle cubes
+		glm::vec3(0.0f, 0.0f, 0.0f),
+		glm::vec3(cubeSeparation, 0.0f, 0.0f),
+		glm::vec3(-cubeSeparation, 0.0f, 0.0f),
+		glm::vec3(0.0f, 0.0f, -cubeSeparation),
+		glm::vec3(cubeSeparation, 0.0f, -cubeSeparation),
+		glm::vec3(-cubeSeparation, 0.0f, -cubeSeparation),
+		glm::vec3(0.0f, 0.0f, cubeSeparation),
+		glm::vec3(cubeSeparation, 0.0f, cubeSeparation),
+		glm::vec3(-cubeSeparation, 0.0f, cubeSeparation),
+
+		// Bottom cubes
+		// Top cubes
+		glm::vec3(0.0f, -cubeSeparation, 0.0f),
+		glm::vec3(cubeSeparation, -cubeSeparation, 0.0f),
+		glm::vec3(-cubeSeparation, -cubeSeparation, 0.0f),
+		glm::vec3(0.0f, -cubeSeparation, -cubeSeparation),
+		glm::vec3(cubeSeparation, -cubeSeparation, -cubeSeparation),
+		glm::vec3(-cubeSeparation, -cubeSeparation, -cubeSeparation),
+		glm::vec3(0.0f, -cubeSeparation, cubeSeparation),
+		glm::vec3(cubeSeparation, -cubeSeparation, cubeSeparation),
+		glm::vec3(-cubeSeparation, -cubeSeparation, cubeSeparation),
+	};
 	
 	glUseProgram(colorShader);
 	glUniform3f(glGetUniformLocation(colorShader, "cubeColor"), 1.0f, 0.675f, 0.0f);
@@ -136,21 +175,23 @@ int main()
 
 		// Camera View
 		glm::mat4 view = camera.getViewMatrix();
-		//view = glm::lookAt(
-		//	glm::vec3(0.0f, 0.0f, 5.0f), // Camera Position
-		//	glm::vec3(0.0f, 0.0f, 0.0f), // Target Position
-		//	glm::vec3(0.0f, 1.0f, 0.0f)  // World-Space Up Vector
-		//);
-
-		glm::mat4 model = glm::mat4(1.0f);
+		glm::mat4 model;
 		glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 
 		glUseProgram(colorShader);
 		glUniformMatrix4fv(glGetUniformLocation(colorShader, "view"), 1, GL_FALSE, &view[0][0]);
-		glUniformMatrix4fv(glGetUniformLocation(colorShader, "model"), 1, GL_FALSE, &model[0][0]);
 		glUniformMatrix4fv(glGetUniformLocation(colorShader, "projection"), 1, GL_FALSE, &projection[0][0]);
+
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		for (unsigned int i = 0; i < 27; i++)
+		{
+			model = glm::mat4(1.0f);
+			model = glm::translate(model, cubePositions[i]);
+			model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
+			glUniformMatrix4fv(glGetUniformLocation(colorShader, "model"), 1, GL_FALSE, &model[0][0]);
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

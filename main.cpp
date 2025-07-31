@@ -29,6 +29,7 @@ unsigned int createShaderProgram(const char* vertexPath, const char* fragmentPat
 void loadShaderCode(const char* shaderPath, std::string& code);
 void mouseCallback(GLFWwindow* window, double xPosInput, double yPosInput);
 void processDeltaTime();
+void processInput(GLFWwindow* window);
 
 int main()
 {
@@ -64,12 +65,53 @@ int main()
 	unsigned int colorShader = createShaderProgram("colorShader.vert", "colorShader.frag");
 
 	float cubeVertices[] = {
-		-1.0f,  1.0f,  0.0f,
-		-1.0f, -1.0f,  0.0f,
-		 1.0f, -1.0f,  0.0f,
-		-1.0f,  1.0f,  0.0f,
-		 1.0f, -1.0f,  0.0f,
-		 1.0f,  1.0f,  0.0f
+		// Front Face
+		-0.5f,  0.5f,  0.5f,
+		-0.5f, -0.5f,  0.5f,
+		 0.5f, -0.5f,  0.5f,
+		-0.5f,  0.5f,  0.5f,
+		 0.5f, -0.5f,  0.5f,
+		 0.5f,  0.5f,  0.5f,
+
+		 // Right Face
+		 0.5f,  0.5f,  0.5f,
+		 0.5f, -0.5f,  0.5f,
+		 0.5f, -0.5f, -0.5f,
+		 0.5f,  0.5f,  0.5f,
+		 0.5f, -0.5f, -0.5f,
+		 0.5f,  0.5f, -0.5f,
+
+		 // Left Face
+		-0.5f,  0.5f,  0.5f,
+		-0.5f, -0.5f,  0.5f,
+		-0.5f, -0.5f, -0.5f,
+		-0.5f,  0.5f,  0.5f,
+		-0.5f, -0.5f, -0.5f,
+		-0.5f,  0.5f, -0.5f,
+
+		// Top Face
+		-0.5f,  0.5f, -0.5f,
+		-0.5f,  0.5f,  0.5f,
+		 0.5f,  0.5f,  0.5f,
+		-0.5f,  0.5f, -0.5f,
+		 0.5f,  0.5f,  0.5f,
+		 0.5f,  0.5f, -0.5f, 
+
+		 // Bottom Face
+		-0.5f, -0.5f, -0.5f,
+		-0.5f, -0.5f,  0.5f,
+		 0.5f, -0.5f,  0.5f,
+		-0.5f, -0.5f, -0.5f,
+		 0.5f, -0.5f,  0.5f,
+		 0.5f, -0.5f, -0.5f,
+
+		 // Back Face
+		-0.5f,  0.5f, -0.5f,
+		-0.5f, -0.5f, -0.5f,
+		 0.5f, -0.5f, -0.5f,
+		-0.5f,  0.5f, -0.5f,
+		 0.5f, -0.5f, -0.5f,
+		 0.5f,  0.5f, -0.5f
 	};
 
 	unsigned int VAO, VBO;
@@ -87,6 +129,7 @@ int main()
 	while (!glfwWindowShouldClose(window))
 	{
 		processDeltaTime();
+		processInput(window);
 
 		glClearColor(0.576f, 0.922f, 0.878f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -107,7 +150,7 @@ int main()
 		glUniformMatrix4fv(glGetUniformLocation(colorShader, "model"), 1, GL_FALSE, &model[0][0]);
 		glUniformMatrix4fv(glGetUniformLocation(colorShader, "projection"), 1, GL_FALSE, &projection[0][0]);
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 6);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -227,4 +270,10 @@ void processDeltaTime()
 	float currentFrame = static_cast<float>(glfwGetTime());
 	deltaTime = currentFrame - lastFrame;
 	lastFrame = currentFrame;
+}
+
+void processInput(GLFWwindow* window)
+{
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+		glfwSetWindowShouldClose(window, true);
 }

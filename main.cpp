@@ -61,6 +61,7 @@ int main()
 	}
 
 	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS);
 
 	unsigned int colorShader = createShaderProgram("colorShader.vert", "colorShader.frag");
 
@@ -95,7 +96,7 @@ int main()
 		 0.5f,  0.5f,  0.5f,
 		-0.5f,  0.5f, -0.5f,
 		 0.5f,  0.5f,  0.5f,
-		 0.5f,  0.5f, -0.5f, 
+		 0.5f,  0.5f, -0.5f,
 
 		 // Bottom Face
 		-0.5f, -0.5f, -0.5f,
@@ -162,15 +163,15 @@ int main()
 		glm::vec3(-cubeSeparation, -cubeSeparation, cubeSeparation),
 	};
 	
-	glUseProgram(colorShader);
-	glUniform3f(glGetUniformLocation(colorShader, "cubeColor"), 1.0f, 0.675f, 0.0f);
+	//glUseProgram(colorShader);
+	//glUniform3f(glGetUniformLocation(colorShader, "cubeColor"), 1.0f, 0.675f, 0.0f);
 
 	while (!glfwWindowShouldClose(window))
 	{
 		processDeltaTime();
 		processInput(window);
 
-		glClearColor(0.576f, 0.922f, 0.878f, 1.0f);
+		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// Camera View

@@ -30,7 +30,7 @@ public:
 	{
 		yaw += yawInput;
 		pitch += pitchInput;
-		pitch = glm::clamp(pitch, -90.0f, 90.0f);
+		pitch = glm::clamp(pitch, -89.9f, 89.9f);
 		calculatePosition();
 	}
 

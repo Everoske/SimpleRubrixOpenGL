@@ -10,6 +10,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "OrbitCamera.h"
+#include "Cube.h"
 
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
@@ -30,6 +31,14 @@ void loadShaderCode(const char* shaderPath, std::string& code);
 void mouseCallback(GLFWwindow* window, double xPosInput, double yPosInput);
 void processDeltaTime();
 void processInput(GLFWwindow* window);
+
+const glm::vec3 Green = glm::vec3(0.0f, 1.0f, 0.0f);
+const glm::vec3 Red = glm::vec3(1.0f, 0.0f, 0.0f);
+const glm::vec3 Orange = glm::vec3(1.0f, 0.5f, 0.0f);
+const glm::vec3 Yellow = glm::vec3(1.0f, 1.0f, 0.0f);
+const glm::vec3 White = glm::vec3(1.0f);
+const glm::vec3 Blue = glm::vec3(0.0f, 0.0f, 1.0f);
+const glm::vec3 Black = glm::vec3(0.05f, 0.05f, 0.05f);
 
 int main()
 {
@@ -126,45 +135,116 @@ int main()
 
 	const float cubeSeparation = 0.6f;
 
-	glm::vec3 cubePositions[] =
+	glm::vec3 cubePositions[27] =
 	{
 		// Top cubes
 		glm::vec3(0.0f, cubeSeparation, 0.0f),
-		glm::vec3(cubeSeparation, cubeSeparation, 0.0f),
-		glm::vec3(-cubeSeparation, cubeSeparation, 0.0f),
-		glm::vec3(0.0f, cubeSeparation, -cubeSeparation),
-		glm::vec3(cubeSeparation, cubeSeparation, -cubeSeparation),
-		glm::vec3(-cubeSeparation, cubeSeparation, -cubeSeparation),
 		glm::vec3(0.0f, cubeSeparation, cubeSeparation),
+		glm::vec3(0.0f, cubeSeparation, -cubeSeparation),
+		glm::vec3(cubeSeparation, cubeSeparation, 0.0f),
 		glm::vec3(cubeSeparation, cubeSeparation, cubeSeparation),
+		glm::vec3(cubeSeparation, cubeSeparation, -cubeSeparation),
+		glm::vec3(-cubeSeparation, cubeSeparation, 0.0f),
 		glm::vec3(-cubeSeparation, cubeSeparation, cubeSeparation),
-
+		glm::vec3(-cubeSeparation, cubeSeparation, -cubeSeparation),
+		
 		// Middle cubes
 		glm::vec3(0.0f, 0.0f, 0.0f),
-		glm::vec3(cubeSeparation, 0.0f, 0.0f),
-		glm::vec3(-cubeSeparation, 0.0f, 0.0f),
-		glm::vec3(0.0f, 0.0f, -cubeSeparation),
-		glm::vec3(cubeSeparation, 0.0f, -cubeSeparation),
-		glm::vec3(-cubeSeparation, 0.0f, -cubeSeparation),
 		glm::vec3(0.0f, 0.0f, cubeSeparation),
+		glm::vec3(0.0f, 0.0f, -cubeSeparation),
+		glm::vec3(cubeSeparation, 0.0f, 0.0f),
 		glm::vec3(cubeSeparation, 0.0f, cubeSeparation),
+		glm::vec3(cubeSeparation, 0.0f, -cubeSeparation),
+		glm::vec3(-cubeSeparation, 0.0f, 0.0f),
 		glm::vec3(-cubeSeparation, 0.0f, cubeSeparation),
+		glm::vec3(-cubeSeparation, 0.0f, -cubeSeparation),
 
 		// Bottom cubes
 		// Top cubes
 		glm::vec3(0.0f, -cubeSeparation, 0.0f),
-		glm::vec3(cubeSeparation, -cubeSeparation, 0.0f),
-		glm::vec3(-cubeSeparation, -cubeSeparation, 0.0f),
-		glm::vec3(0.0f, -cubeSeparation, -cubeSeparation),
-		glm::vec3(cubeSeparation, -cubeSeparation, -cubeSeparation),
-		glm::vec3(-cubeSeparation, -cubeSeparation, -cubeSeparation),
 		glm::vec3(0.0f, -cubeSeparation, cubeSeparation),
+		glm::vec3(0.0f, -cubeSeparation, -cubeSeparation),
+		glm::vec3(cubeSeparation, -cubeSeparation, 0.0f),
 		glm::vec3(cubeSeparation, -cubeSeparation, cubeSeparation),
+		glm::vec3(cubeSeparation, -cubeSeparation, -cubeSeparation),
+		glm::vec3(-cubeSeparation, -cubeSeparation, 0.0f),
 		glm::vec3(-cubeSeparation, -cubeSeparation, cubeSeparation),
+		glm::vec3(-cubeSeparation, -cubeSeparation, -cubeSeparation),
 	};
-	
-	//glUseProgram(colorShader);
-	//glUniform3f(glGetUniformLocation(colorShader, "cubeColor"), 1.0f, 0.675f, 0.0f);
+
+	Cube cubes[27] = {
+		Cube(Black, Black, Black, Green, Black, Black),
+		Cube(Yellow, Black, Black, Green, Black, Black),
+		Cube(Black, Black, Black, Green, Black, White),
+		Cube(Black, Red, Black, Green, Black, Black),
+		Cube(Yellow, Red, Black, Green, Black, Black),
+		Cube(Black, Red, Black, Green, Black, White),
+		Cube(Black, Black, Orange, Green, Black, Black),
+		Cube(Yellow, Black, Orange, Green, Black, Black),
+		Cube(Black, Black, Orange, Green, Black, White),
+
+		Cube(Black, Black, Black, Black, Black, Black),
+		Cube(Yellow, Black, Black, Black, Black, Black),
+		Cube(Black, Black, Black, Black, Black, White),
+		Cube(Black, Red, Black, Black, Black, Black),
+		Cube(Yellow, Red, Black, Black, Black, Black),
+		Cube(Black, Red, Black, Black, Black, White),
+		Cube(Black, Black, Orange, Black, Black, Black),
+		Cube(Yellow, Black, Orange, Black, Black, Black),
+		Cube(Black, Black, Orange, Black, Black, White),
+
+		Cube(Black, Black, Black, Black, Blue, Black),
+		Cube(Yellow, Black, Black, Black, Blue, Black),
+		Cube(Black, Black, Black, Black, Blue, White),
+		Cube(Black, Red, Black, Black, Blue, Black),
+		Cube(Yellow, Red, Black, Black, Blue, Black),
+		Cube(Black, Red, Black, Black, Blue, White),
+		Cube(Black, Black, Orange, Black, Blue, Black),
+		Cube(Yellow, Black, Orange, Black, Blue, Black),
+		Cube(Black, Black, Orange, Black, Blue, White)
+	};
+
+	for (int i = 0; i < 27; i++)
+	{
+		cubes[i].setStartPosition(cubePositions[i]);
+	}
+
+	// TESTING ROTATION
+	/*float pitch = 90.0f;
+
+	cubes[0].rotatePitch(pitch);
+	cubes[1].rotatePitch(pitch);
+	cubes[2].rotatePitch(pitch);
+	cubes[10].rotatePitch(pitch);
+	cubes[11].rotatePitch(pitch);
+	cubes[18].rotatePitch(pitch);
+	cubes[19].rotatePitch(pitch);
+	cubes[20].rotatePitch(pitch);*/
+
+	/*float yaw = 90.0f;
+
+	cubes[10].rotateYaw(yaw);
+	cubes[11].rotateYaw(yaw);
+	cubes[12].rotateYaw(yaw);
+	cubes[13].rotateYaw(yaw);
+	cubes[14].rotateYaw(yaw);
+	cubes[15].rotateYaw(yaw);
+	cubes[16].rotateYaw(yaw);
+	cubes[17].rotateYaw(yaw);*/
+
+	/*float roll = 90.0f;
+
+	cubes[0].rotateRoll(roll);
+	cubes[3].rotateRoll(roll);
+	cubes[6].rotateRoll(roll);
+	cubes[12].rotateRoll(roll);
+	cubes[15].rotateRoll(roll);
+	cubes[18].rotateRoll(roll);
+	cubes[21].rotateRoll(roll);
+	cubes[24].rotateRoll(roll);*/
+
+	Cube dummyCube = Cube(Green, Red, Orange, White, Yellow, Blue);
+	dummyCube.setStartPosition(glm::vec3(0.0f, 0.0f, 0.0f));
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -185,12 +265,36 @@ int main()
 
 		glBindVertexArray(VAO);
 
+		//model = glm::mat4(1.0f);
+		//model = glm::translate(model, dummyCube.getCurrentPosition());
+		//// model = glm::rotate(model, cubes[i].getLocalRotation().x, glm::vec3(1.0f, 0.0f, 0.0f));
+		//model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
+		//glUniformMatrix4fv(glGetUniformLocation(colorShader, "model"), 1, GL_FALSE, &model[0][0]);
+		//dummyCube.bindFaceColors(colorShader);
+		//glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		float pitch = 90.0f * deltaTime;
+
+		cubes[0].rotatePitch(pitch);
+		cubes[1].rotatePitch(pitch);
+		cubes[2].rotatePitch(pitch);
+		cubes[10].rotatePitch(pitch);
+		cubes[11].rotatePitch(pitch);
+		cubes[18].rotatePitch(pitch);
+		cubes[19].rotatePitch(pitch);
+		cubes[20].rotatePitch(pitch);
+
 		for (unsigned int i = 0; i < 27; i++)
 		{
 			model = glm::mat4(1.0f);
-			model = glm::translate(model, cubePositions[i]);
+			model = glm::translate(model, cubes[i].getCurrentPosition());
+			
+			model = glm::rotate(model, cubes[i].getLocalRotation().x, glm::vec3(1.0f, 0.0f, 0.0f));
+			/*model = glm::rotate(model, cubes[i].getLocalRotation().z, glm::vec3(0.0f, 0.0f, 1.0f));
+			model = glm::rotate(model, cubes[i].getLocalRotation().y, glm::vec3(0.0f, 1.0f, 0.0f));*/
 			model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
 			glUniformMatrix4fv(glGetUniformLocation(colorShader, "model"), 1, GL_FALSE, &model[0][0]);
+			cubes[i].bindFaceColors(colorShader);
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
 

@@ -37,5 +37,11 @@
     <ClInclude Include="OrbitCamera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Cube.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EQuaternion.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

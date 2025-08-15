@@ -210,7 +210,7 @@ int main()
 	}
 
 	// TESTING ROTATION
-	/*float pitch = 90.0f;
+	float pitch = 90.0f;
 
 	cubes[0].rotatePitch(pitch);
 	cubes[1].rotatePitch(pitch);
@@ -219,7 +219,29 @@ int main()
 	cubes[11].rotatePitch(pitch);
 	cubes[18].rotatePitch(pitch);
 	cubes[19].rotatePitch(pitch);
-	cubes[20].rotatePitch(pitch);*/
+	cubes[20].rotatePitch(pitch);
+
+	float yaw = 90.0f;
+
+	cubes[0].rotateYaw(yaw);
+	cubes[18].rotateYaw(yaw);
+	cubes[12].rotateYaw(yaw);
+	cubes[13].rotateYaw(yaw);
+	cubes[14].rotateYaw(yaw);
+	cubes[15].rotateYaw(yaw);
+	cubes[16].rotateYaw(yaw);
+	cubes[17].rotateYaw(yaw);
+
+	/*float roll = 90.0f;
+
+	cubes[0].rotateRoll(roll);
+	cubes[3].rotateRoll(roll);
+	cubes[6].rotateRoll(roll);
+	cubes[12].rotateRoll(roll);
+	cubes[15].rotateRoll(roll);
+	cubes[18].rotateRoll(roll);
+	cubes[21].rotateRoll(roll);
+	cubes[24].rotateRoll(roll);*/
 
 	/*float yaw = 90.0f;
 
@@ -273,7 +295,7 @@ int main()
 		//dummyCube.bindFaceColors(colorShader);
 		//glDrawArrays(GL_TRIANGLES, 0, 36);
 
-		float pitch = 90.0f * deltaTime;
+		/*float pitch = 90.0f * deltaTime;
 
 		cubes[0].rotatePitch(pitch);
 		cubes[1].rotatePitch(pitch);
@@ -282,16 +304,15 @@ int main()
 		cubes[11].rotatePitch(pitch);
 		cubes[18].rotatePitch(pitch);
 		cubes[19].rotatePitch(pitch);
-		cubes[20].rotatePitch(pitch);
+		cubes[20].rotatePitch(pitch);*/
 
 		for (unsigned int i = 0; i < 27; i++)
 		{
 			model = glm::mat4(1.0f);
 			model = glm::translate(model, cubes[i].getCurrentPosition());
-			
+			model = glm::rotate(model, cubes[i].getLocalRotation().z, glm::vec3(0.0f, 0.0f, 1.0f));
+			model = glm::rotate(model, cubes[i].getLocalRotation().y, glm::vec3(0.0f, 1.0f, 0.0f));
 			model = glm::rotate(model, cubes[i].getLocalRotation().x, glm::vec3(1.0f, 0.0f, 0.0f));
-			/*model = glm::rotate(model, cubes[i].getLocalRotation().z, glm::vec3(0.0f, 0.0f, 1.0f));
-			model = glm::rotate(model, cubes[i].getLocalRotation().y, glm::vec3(0.0f, 1.0f, 0.0f));*/
 			model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
 			glUniformMatrix4fv(glGetUniformLocation(colorShader, "model"), 1, GL_FALSE, &model[0][0]);
 			cubes[i].bindFaceColors(colorShader);

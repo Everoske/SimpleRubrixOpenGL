@@ -45,8 +45,6 @@ public:
 		worldRotation.x += glm::radians(degreesPitch);
 		float theta = worldRotation.x;
 
-		/*currentPosition.y = -glm::sin(theta) * magnitude;
-		currentPosition.z = glm::cos(theta) * magnitude;*/
 		currentPosition = EQuaternion::rotatePitch(currentPosition, glm::radians(degreesPitch));
 
 		localRotation.x = theta - initialWorldRotation.x;
@@ -57,8 +55,7 @@ public:
 		worldRotation.y += glm::radians(degreesYaw);
 		float theta = worldRotation.y;
 
-		/*currentPosition.x = glm::sin(theta) * magnitude;
-		currentPosition.z = glm::cos(theta) * magnitude;*/
+		currentPosition = EQuaternion::rotateYaw(currentPosition, glm::radians(degreesYaw));
 
 		localRotation.y = theta - initialWorldRotation.y;
 	}
@@ -68,8 +65,7 @@ public:
 		worldRotation.z += glm::radians(degreesRoll);
 		float theta = worldRotation.z;
 
-		/*currentPosition.x = glm::cos(theta) * magnitude;
-		currentPosition.y = glm::sin(theta) * magnitude;*/
+		currentPosition = EQuaternion::rotateRoll(currentPosition, glm::radians(degreesRoll));
 
 		localRotation.z = theta - initialWorldRotation.z;
 	}

@@ -30,6 +30,7 @@
     <ClInclude Include="Cube.h" />
     <ClInclude Include="OrbitCamera.h" />
     <ClInclude Include="EQuaternion.h" />
+    <ClInclude Include="Rubiks.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

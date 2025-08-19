@@ -19,10 +19,6 @@ public:
 
 	glm::mat4 getViewMatrix()
 	{
-		//std::cout << "Position: " << position.x << "," << position.y << "," << position.z << std::endl;
-		//std::cout << "Target Pos: " << targetPosition.x << "," << targetPosition.y << "," << targetPosition.z << std::endl;
-		//std::cout << "World Up: " << worldUp.x << "," << worldUp.y << "," << worldUp.z << std::endl;
-
 		return glm::lookAt(position, targetPosition, worldUp);
 	}
 

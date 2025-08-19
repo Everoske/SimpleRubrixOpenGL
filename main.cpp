@@ -210,18 +210,10 @@ int main()
 	}
 
 	// TESTING ROTATION
-	float pitch = 90.0f;
 
-	cubes[0].rotatePitch(pitch);
-	cubes[1].rotatePitch(pitch);
-	cubes[2].rotatePitch(pitch);
-	cubes[10].rotatePitch(pitch);
-	cubes[11].rotatePitch(pitch);
-	cubes[18].rotatePitch(pitch);
-	cubes[19].rotatePitch(pitch);
-	cubes[20].rotatePitch(pitch);
+	
 
-	float yaw = 90.0f;
+	/*float yaw = 360.0f;
 
 	cubes[0].rotateYaw(yaw);
 	cubes[18].rotateYaw(yaw);
@@ -232,27 +224,16 @@ int main()
 	cubes[16].rotateYaw(yaw);
 	cubes[17].rotateYaw(yaw);
 
-	/*float roll = 90.0f;
+	float pitch = 90.0f;
 
-	cubes[0].rotateRoll(roll);
-	cubes[3].rotateRoll(roll);
-	cubes[6].rotateRoll(roll);
-	cubes[12].rotateRoll(roll);
-	cubes[15].rotateRoll(roll);
-	cubes[18].rotateRoll(roll);
-	cubes[21].rotateRoll(roll);
-	cubes[24].rotateRoll(roll);*/
-
-	/*float yaw = 90.0f;
-
-	cubes[10].rotateYaw(yaw);
-	cubes[11].rotateYaw(yaw);
-	cubes[12].rotateYaw(yaw);
-	cubes[13].rotateYaw(yaw);
-	cubes[14].rotateYaw(yaw);
-	cubes[15].rotateYaw(yaw);
-	cubes[16].rotateYaw(yaw);
-	cubes[17].rotateYaw(yaw);*/
+	cubes[0].rotatePitch(pitch);
+	cubes[1].rotatePitch(pitch);
+	cubes[2].rotatePitch(pitch);
+	cubes[10].rotatePitch(pitch);
+	cubes[11].rotatePitch(pitch);
+	cubes[18].rotatePitch(pitch);
+	cubes[19].rotatePitch(pitch);
+	cubes[20].rotatePitch(pitch);*/
 
 	/*float roll = 90.0f;
 
@@ -265,8 +246,56 @@ int main()
 	cubes[21].rotateRoll(roll);
 	cubes[24].rotateRoll(roll);*/
 
-	Cube dummyCube = Cube(Green, Red, Orange, White, Yellow, Blue);
-	dummyCube.setStartPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+	for (int i = 0; i < 27; i++)
+	{
+		if (cubes[i].getCurrentPosition().y == cubeSeparation)
+		{
+			cubes[i].rotateYaw(450.0f);
+			
+			glm::vec3 pos = glm::vec3(0.0f);
+
+			if (cubes[i].getCurrentPosition().x > -0.00015f && cubes[i].getCurrentPosition().x < 0.00015f)
+				pos.x = 0.0f;
+			if (cubes[i].getCurrentPosition().y > -0.00015f && cubes[i].getCurrentPosition().y < 0.00015f)
+				pos.y = 0.0f;
+			if (cubes[i].getCurrentPosition().z > -0.00015f && cubes[i].getCurrentPosition().z < 0.00015f)
+				pos.z = 0.0f;
+
+			if (cubes[i].getCurrentPosition().x > 0.00015f && cubes[i].getCurrentPosition().x < cubeSeparation || cubes[i].getCurrentPosition().x > cubeSeparation - 0.00015f)
+				pos.x = cubeSeparation;
+			if (cubes[i].getCurrentPosition().y > 0.00015f && cubes[i].getCurrentPosition().y < cubeSeparation || cubes[i].getCurrentPosition().y > cubeSeparation - 0.00015f)
+				pos.y = cubeSeparation;
+			if (cubes[i].getCurrentPosition().z > 0.00015f && cubes[i].getCurrentPosition().z < cubeSeparation || cubes[i].getCurrentPosition().z > cubeSeparation - 0.00015f)
+				pos.z = cubeSeparation;
+
+			if (cubes[i].getCurrentPosition().x < -0.00015f && cubes[i].getCurrentPosition().x > -cubeSeparation || cubes[i].getCurrentPosition().x < -cubeSeparation + 0.00015f)
+				pos.x = -cubeSeparation;
+			if (cubes[i].getCurrentPosition().y < -0.00015f && cubes[i].getCurrentPosition().y > -cubeSeparation || cubes[i].getCurrentPosition().y < -cubeSeparation + 0.00015f)
+				pos.y = -cubeSeparation;
+			if (cubes[i].getCurrentPosition().z < -0.00015f && cubes[i].getCurrentPosition().z > -cubeSeparation || cubes[i].getCurrentPosition().z < -cubeSeparation + 0.00015f)
+				pos.z = -cubeSeparation;
+
+			cubes[i].setCurrentPosition(pos);
+
+			std::cout << cubes[i].getCurrentPosition().x << ", " <<  
+				cubes[i].getCurrentPosition().y << ", " <<
+				cubes[i].getCurrentPosition().z << " " <<
+			std::endl;
+		}
+	}
+
+	for (int i = 0; i < 27; i++)
+	{
+		if (cubes[i].getCurrentPosition().x == 0.0f)
+			cubes[i].rotatePitch(270.0f);
+	}
+
+	//for (int i = 0; i < 27; i++)
+	//{
+	//	if (cubes[i].getCurrentPosition().z == cubeSeparation)
+	//		cubes[i].rotateRoll(180.0f);
+	//}
+
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -287,13 +316,6 @@ int main()
 
 		glBindVertexArray(VAO);
 
-		//model = glm::mat4(1.0f);
-		//model = glm::translate(model, dummyCube.getCurrentPosition());
-		//// model = glm::rotate(model, cubes[i].getLocalRotation().x, glm::vec3(1.0f, 0.0f, 0.0f));
-		//model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
-		//glUniformMatrix4fv(glGetUniformLocation(colorShader, "model"), 1, GL_FALSE, &model[0][0]);
-		//dummyCube.bindFaceColors(colorShader);
-		//glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		/*float pitch = 90.0f * deltaTime;
 
@@ -311,8 +333,9 @@ int main()
 			model = glm::mat4(1.0f);
 			model = glm::translate(model, cubes[i].getCurrentPosition());
 			model = glm::rotate(model, cubes[i].getLocalRotation().z, glm::vec3(0.0f, 0.0f, 1.0f));
-			model = glm::rotate(model, cubes[i].getLocalRotation().y, glm::vec3(0.0f, 1.0f, 0.0f));
 			model = glm::rotate(model, cubes[i].getLocalRotation().x, glm::vec3(1.0f, 0.0f, 0.0f));
+			model = glm::rotate(model, cubes[i].getLocalRotation().y, glm::vec3(0.0f, 1.0f, 0.0f));
+			
 			model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
 			glUniformMatrix4fv(glGetUniformLocation(colorShader, "model"), 1, GL_FALSE, &model[0][0]);
 			cubes[i].bindFaceColors(colorShader);

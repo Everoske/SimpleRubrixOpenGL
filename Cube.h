@@ -8,12 +8,12 @@
 class Cube
 {
 public:
-	Cube(glm::vec3 frontFace,
-		glm::vec3 rightFace,
-		glm::vec3 leftFace,
-		glm::vec3 topFace,
-		glm::vec3 bottomFace,
-		glm::vec3 backFace
+	Cube(glm::vec3 frontFace = glm::vec3(0.05f, 0.05f, 0.05f),
+		glm::vec3 rightFace = glm::vec3(0.05f, 0.05f, 0.05f),
+		glm::vec3 leftFace = glm::vec3(0.05f, 0.05f, 0.05f),
+		glm::vec3 topFace = glm::vec3(0.05f, 0.05f, 0.05f),
+		glm::vec3 bottomFace = glm::vec3(0.05f, 0.05f, 0.05f),
+		glm::vec3 backFace = glm::vec3(0.05f, 0.05f, 0.05f)
 	);
 
 	void bindFaceColors(const unsigned int shaderID);

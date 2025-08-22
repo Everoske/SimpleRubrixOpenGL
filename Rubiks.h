@@ -2,7 +2,7 @@
 #define RUBIKS_H
 
 #include "Cube.h"
-#include <array>
+#include <vector>
 
 enum RubrikSection
 {
@@ -16,12 +16,14 @@ class Rubiks
 public:
 	Rubiks(float cubeDisplacement, float floatMargin);
 	
-	void rotateCubesX(RubrikSection section, bool counterClockwise);
-	void rotateCubesY(RubrikSection section, bool counterClockwise);
-	void rotateCubesZ(RubrikSection section, bool counterClockwise);
+	void rotateCubesX(RubrikSection section, bool counterClockwise = false);
+	void rotateCubesY(RubrikSection section, bool counterClockwise = false);
+	void rotateCubesZ(RubrikSection section, bool counterClockwise = false);
+
+	std::vector<Cube> getCubes() { return cubes; }
 
 private:
-	std::array<Cube, 27> cubes;
+	std::vector<Cube> cubes;
 	float displacement;
 	float errorMargin;
 

@@ -13,11 +13,11 @@ void Rubiks::rotateCubesX(RubrikSection section, bool counterClockwise)
 
 	for (int i = 0; i < 27; i++)
 	{
-		if (cubes[i].getCurrentPosition().x == x)
+		if (cubes.at(i).getCurrentPosition().x == x)
 		{
-			cubes[i].rotatePitch(rotation);
-			glm::vec3 clampedPosition = clampPosition(cubes[i].getCurrentPosition());
-			cubes[i].setCurrentPosition(clampedPosition);
+			cubes.at(i).rotatePitch(rotation);
+			glm::vec3 clampedPosition = clampPosition(cubes.at(i).getCurrentPosition());
+			cubes.at(i).setCurrentPosition(clampedPosition);
 		}
 	}
 }
@@ -29,11 +29,11 @@ void Rubiks::rotateCubesY(RubrikSection section, bool counterClockwise)
 
 	for (int i = 0; i < 27; i++)
 	{
-		if (cubes[i].getCurrentPosition().y == y)
+		if (cubes.at(i).getCurrentPosition().y == y)
 		{
-			cubes[i].rotateYaw(rotation);
-			glm::vec3 clampedPosition = clampPosition(cubes[i].getCurrentPosition());
-			cubes[i].setCurrentPosition(clampedPosition);
+			cubes.at(i).rotateYaw(rotation);
+			glm::vec3 clampedPosition = clampPosition(cubes.at(i).getCurrentPosition());
+			cubes.at(i).setCurrentPosition(clampedPosition);
 		}
 	}
 }
@@ -45,11 +45,11 @@ void Rubiks::rotateCubesZ(RubrikSection section, bool counterClockwise)
 
 	for (int i = 0; i < 27; i++)
 	{
-		if (cubes[i].getCurrentPosition().z == z)
+		if (cubes.at(i).getCurrentPosition().z == z)
 		{
-			cubes[i].rotateRoll(rotation);
-			glm::vec3 clampedPosition = clampPosition(cubes[i].getCurrentPosition());
-			cubes[i].setCurrentPosition(clampedPosition);
+			cubes.at(i).rotateRoll(rotation);
+			glm::vec3 clampedPosition = clampPosition(cubes.at(i).getCurrentPosition());
+			cubes.at(i).setCurrentPosition(clampedPosition);
 		}
 	}
 }
@@ -64,37 +64,77 @@ void Rubiks::createCubes()
 	const glm::vec3 Blue = glm::vec3(0.0f, 0.0f, 1.0f);
 	const glm::vec3 Black = glm::vec3(0.05f, 0.05f, 0.05f);
 
-	cubes = {
-		Cube(Black, Black, Black, Green, Black, Black),
-		Cube(Yellow, Black, Black, Green, Black, Black),
-		Cube(Black, Black, Black, Green, Black, White),
-		Cube(Black, Red, Black, Green, Black, Black),
-		Cube(Yellow, Red, Black, Green, Black, Black),
-		Cube(Black, Red, Black, Green, Black, White),
-		Cube(Black, Black, Orange, Green, Black, Black),
-		Cube(Yellow, Black, Orange, Green, Black, Black),
-		Cube(Black, Black, Orange, Green, Black, White),
+	glm::vec3 cubePositions[27] =
+	{
+		// Top cubes
+		glm::vec3(0.0f, displacement, 0.0f),
+		glm::vec3(0.0f, displacement, displacement),
+		glm::vec3(0.0f, displacement, -displacement),
+		glm::vec3(displacement, displacement, 0.0f),
+		glm::vec3(displacement, displacement, displacement),
+		glm::vec3(displacement, displacement, -displacement),
+		glm::vec3(-displacement, displacement, 0.0f),
+		glm::vec3(-displacement, displacement, displacement),
+		glm::vec3(-displacement, displacement, -displacement),
 
-		Cube(Black, Black, Black, Black, Black, Black),
-		Cube(Yellow, Black, Black, Black, Black, Black),
-		Cube(Black, Black, Black, Black, Black, White),
-		Cube(Black, Red, Black, Black, Black, Black),
-		Cube(Yellow, Red, Black, Black, Black, Black),
-		Cube(Black, Red, Black, Black, Black, White),
-		Cube(Black, Black, Orange, Black, Black, Black),
-		Cube(Yellow, Black, Orange, Black, Black, Black),
-		Cube(Black, Black, Orange, Black, Black, White),
+		// Middle cubes
+		glm::vec3(0.0f, 0.0f, 0.0f),
+		glm::vec3(0.0f, 0.0f, displacement),
+		glm::vec3(0.0f, 0.0f, -displacement),
+		glm::vec3(displacement, 0.0f, 0.0f),
+		glm::vec3(displacement, 0.0f, displacement),
+		glm::vec3(displacement, 0.0f, -displacement),
+		glm::vec3(-displacement, 0.0f, 0.0f),
+		glm::vec3(-displacement, 0.0f, displacement),
+		glm::vec3(-displacement, 0.0f, -displacement),
 
-		Cube(Black, Black, Black, Black, Blue, Black),
-		Cube(Yellow, Black, Black, Black, Blue, Black),
-		Cube(Black, Black, Black, Black, Blue, White),
-		Cube(Black, Red, Black, Black, Blue, Black),
-		Cube(Yellow, Red, Black, Black, Blue, Black),
-		Cube(Black, Red, Black, Black, Blue, White),
-		Cube(Black, Black, Orange, Black, Blue, Black),
-		Cube(Yellow, Black, Orange, Black, Blue, Black),
-		Cube(Black, Black, Orange, Black, Blue, White)
+		// Bottom cubes
+		// Top cubes
+		glm::vec3(0.0f, -displacement, 0.0f),
+		glm::vec3(0.0f, -displacement, displacement),
+		glm::vec3(0.0f, -displacement, -displacement),
+		glm::vec3(displacement, -displacement, 0.0f),
+		glm::vec3(displacement, -displacement, displacement),
+		glm::vec3(displacement, -displacement, -displacement),
+		glm::vec3(-displacement, -displacement, 0.0f),
+		glm::vec3(-displacement, -displacement, displacement),
+		glm::vec3(-displacement, -displacement, -displacement),
 	};
+
+	cubes.push_back(Cube(Black, Black, Black, Green, Black, Black));
+	cubes.push_back(Cube(Yellow, Black, Black, Green, Black, Black));
+	cubes.push_back(Cube(Black, Black, Black, Green, Black, White));
+	cubes.push_back(Cube(Black, Red, Black, Green, Black, Black));
+	cubes.push_back(Cube(Yellow, Red, Black, Green, Black, Black));
+	cubes.push_back(Cube(Black, Red, Black, Green, Black, White));
+	cubes.push_back(Cube(Black, Black, Orange, Green, Black, Black));
+	cubes.push_back(Cube(Yellow, Black, Orange, Green, Black, Black));
+	cubes.push_back(Cube(Black, Black, Orange, Green, Black, White));
+
+	cubes.push_back(Cube(Black, Black, Black, Black, Black, Black));
+	cubes.push_back(Cube(Yellow, Black, Black, Black, Black, Black));
+	cubes.push_back(Cube(Black, Black, Black, Black, Black, White));
+	cubes.push_back(Cube(Black, Red, Black, Black, Black, Black));
+	cubes.push_back(Cube(Yellow, Red, Black, Black, Black, Black));
+	cubes.push_back(Cube(Black, Red, Black, Black, Black, White));
+	cubes.push_back(Cube(Black, Black, Orange, Black, Black, Black));
+	cubes.push_back(Cube(Yellow, Black, Orange, Black, Black, Black));
+	cubes.push_back(Cube(Black, Black, Orange, Black, Black, White));
+
+	cubes.push_back(Cube(Black, Black, Black, Black, Blue, Black));
+	cubes.push_back(Cube(Yellow, Black, Black, Black, Blue, Black));
+	cubes.push_back(Cube(Black, Black, Black, Black, Blue, White));
+	cubes.push_back(Cube(Black, Red, Black, Black, Blue, Black));
+	cubes.push_back(Cube(Yellow, Red, Black, Black, Blue, Black));
+	cubes.push_back(Cube(Black, Red, Black, Black, Blue, White));
+	cubes.push_back(Cube(Black, Black, Orange, Black, Blue, Black));
+	cubes.push_back(Cube(Yellow, Black, Orange, Black, Blue, Black));
+	cubes.push_back(Cube(Black, Black, Orange, Black, Blue, White));
+
+	for (int i = 0; i < 27; i++)
+	{
+		cubes.at(i).setStartPosition(cubePositions[i]);
+	}
 }
 
 float Rubiks::getSectionCoordinate(RubrikSection section) const

@@ -20,7 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Cube.cpp" />
-    <ClCompile Include="EQuaternion.cpp" />
+    <ClCompile Include="Quaternion.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Rubiks.cpp" />
@@ -32,7 +32,7 @@
   <ItemGroup>
     <ClInclude Include="Cube.h" />
     <ClInclude Include="OrbitCamera.h" />
-    <ClInclude Include="EQuaternion.h" />
+    <ClInclude Include="Quaternion.h" />
     <ClInclude Include="Rubiks.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

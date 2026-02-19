@@ -3,7 +3,7 @@
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>
-#include "EQuaternion.h"
+#include "Quaternion.h"
 
 class Cube
 {
@@ -26,13 +26,13 @@ public:
 	void setCurrentPosition(glm::vec3 position);
 	glm::vec3 getStartingPosition();
 	glm::vec3 getCurrentPosition();
-	glm::vec3 getLocalRotation();
+	Quaternion getOrientation();
 
 private:
 	glm::vec3 faceColors[6];
 	glm::vec3 startingPosition;
 	glm::vec3 currentPosition;
-	glm::vec3 localRotation;
+	Quaternion orientation;
 };
 
 #endif

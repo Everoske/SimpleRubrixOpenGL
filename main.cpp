@@ -137,11 +137,11 @@ int main()
 	Rubiks rubiksCube = Rubiks(0.6f, 0.0015f);
 	
 	rubiksCube.rotateCubesX(RubrikSection::MIDDLE);
-	//rubiksCube.rotateCubesY(RubrikSection::MIDDLE);
-	rubiksCube.rotateCubesZ(RubrikSection::MIDDLE);
-	rubiksCube.rotateCubesZ(RubrikSection::MIDDLE);
-	rubiksCube.rotateCubesZ(RubrikSection::MIDDLE);
-	rubiksCube.rotateCubesX(RubrikSection::MIDDLE);
+	rubiksCube.rotateCubesY(RubrikSection::MIDDLE);
+	//rubiksCube.rotateCubesZ(RubrikSection::MIDDLE);
+	//rubiksCube.rotateCubesX(RubrikSection::MIDDLE);
+	//rubiksCube.rotateCubesZ(RubrikSection::MIDDLE);
+	//rubiksCube.rotateCubesX(RubrikSection::MIDDLE);
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -167,10 +167,8 @@ int main()
 		for (unsigned int i = 0; i < 27; i++)
 		{
 			model = glm::mat4(1.0f);
-			model = glm::translate(model, rCubes[i].getCurrentPosition());
-			model = glm::rotate(model, rCubes[i].getLocalRotation().z, glm::vec3(0.0f, 0.0f, 1.0f));
-			model = glm::rotate(model, rCubes[i].getLocalRotation().x, glm::vec3(1.0f, 0.0f, 0.0f));
-			model = glm::rotate(model, rCubes[i].getLocalRotation().y, glm::vec3(0.0f, 1.0f, 0.0f));
+			glm::mat4x4 rotation = rCubes[i].getOrientation().toRotationMatrix();
+			model = glm::translate(model, rCubes[i].getCurrentPosition()) * rotation;
 			
 			model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
 			glUniformMatrix4fv(glGetUniformLocation(colorShader, "model"), 1, GL_FALSE, &model[0][0]);

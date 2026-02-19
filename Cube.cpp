@@ -9,7 +9,7 @@ Cube::Cube(glm::vec3 frontFace,
 ) :
 	startingPosition(glm::vec3(0.0f)),
 	currentPosition(glm::vec3(0.0f)),
-	localRotation(glm::vec3(0.0f))
+	orientation(Quaternion())
 {
 	faceColors[0] = frontFace;
 	faceColors[1] = rightFace;
@@ -31,20 +31,20 @@ void Cube::bindFaceColors(const unsigned int shaderID)
 
 void Cube::rotatePitch(float degreesPitch)
 {
-	currentPosition = EQuaternion::rotatePitch(currentPosition, glm::radians(degreesPitch));
-	localRotation.x += glm::radians(degreesPitch);
+	currentPosition = Quaternion::rotatePitch(currentPosition, glm::radians(degreesPitch));
+	orientation = Quaternion::rotateQuaternion(orientation, glm::vec3(1.0f, 0.0f, 0.0f), glm::radians(-degreesPitch));
 }
 
 void Cube::rotateYaw(float degreesYaw)
 {
-	currentPosition = EQuaternion::rotateYaw(currentPosition, glm::radians(degreesYaw));
-	localRotation.y += glm::radians(degreesYaw);
+	currentPosition = Quaternion::rotateYaw(currentPosition, glm::radians(degreesYaw));
+	orientation = Quaternion::rotateQuaternion(orientation, glm::vec3(0.0f, 1.0f, 0.0f), glm::radians(-degreesYaw));
 }
 
 void Cube::rotateRoll(float degreesRoll)
 {
-	currentPosition = EQuaternion::rotateRoll(currentPosition, glm::radians(degreesRoll));
-	localRotation.z += glm::radians(degreesRoll);
+	currentPosition = Quaternion::rotateRoll(currentPosition, glm::radians(degreesRoll));
+	orientation = Quaternion::rotateQuaternion(orientation, glm::vec3(0.0f, 0.0f, 1.0f), glm::radians(-degreesRoll));
 }
 
 void Cube::setStartPosition(glm::vec3 position)
@@ -68,7 +68,7 @@ glm::vec3 Cube::getCurrentPosition()
 	return currentPosition;
 }
 
-glm::vec3 Cube::getLocalRotation()
+Quaternion Cube::getOrientation()
 {
-	return localRotation;
+	return orientation;
 }

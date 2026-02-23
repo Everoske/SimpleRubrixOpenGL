@@ -18,21 +18,31 @@ public:
 
 	void bindFaceColors(const unsigned int shaderID);
 
-	void rotatePitch(float degreesPitch);
-	void rotateYaw(float degreesYaw);
-	void rotateRoll(float degreesRoll);
+	void rotateSmoothX(float radians, float timePercent);
 
-	void setStartPosition(glm::vec3 position);
-	void setCurrentPosition(glm::vec3 position);
-	glm::vec3 getStartingPosition();
-	glm::vec3 getCurrentPosition();
-	Quaternion getOrientation();
+	void setStartPosition(const glm::vec3& position);
+	void setCurrentPosition(const glm::vec3& position);
+	void setOrientation(const Quaternion& newOrientation);
+	glm::vec3 getStartingPosition() const;
+	glm::vec3 getCurrentPosition() const;
+	Quaternion getOrientation() const;
+	glm::mat4x4 getTransformationMatrix() const;
 
 private:
 	glm::vec3 faceColors[6];
 	glm::vec3 startingPosition;
 	glm::vec3 currentPosition;
+	glm::vec3 lastFixedPosition;
 	Quaternion orientation;
+	Quaternion lastFixedOrientation;
+	glm::vec3 scale;
+	glm::vec3 up;
+	glm::vec3 forward;
+
+	bool isRotating;
+
+	void rotateVectors(glm::vec3 axis, float radians);
+	void rotateVectors(Quaternion newOrientation);
 };
 
 #endif

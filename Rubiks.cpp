@@ -1,56 +1,37 @@
 #include "Rubiks.h"
 
-Rubiks::Rubiks(float cubeDisplacement, float floatMargin) :
-	displacement(cubeDisplacement), errorMargin(floatMargin)
+Rubiks::Rubiks(float cubeDisplacement, float floatMargin, float rotationTime) :
+	displacement(cubeDisplacement), errorMargin(floatMargin), rotationTime(rotationTime)
 {
 	createCubes();
+	rotatingIndices = std::vector<int>();
+	isRotating = false;
 }
 
-void Rubiks::rotateCubesX(RubrikSection section, bool counterClockwise)
+void Rubiks::rotateCubesSmoothX(RubrikSection section, float deltaTime, bool counterClockwise)
 {
-	float rotation = counterClockwise ? -90.0f : 90.0f;
-	float x = getSectionCoordinate(section);
-
-	for (int i = 0; i < 27; i++)
+	if (!isRotating)
 	{
-		if (cubes.at(i).getCurrentPosition().x == x)
-		{
-			cubes.at(i).rotatePitch(rotation);
-			glm::vec3 clampedPosition = clampPosition(cubes.at(i).getCurrentPosition());
-			cubes.at(i).setCurrentPosition(clampedPosition);
-		}
+		float xPosition = getSectionCoordinate(section);
+		findRotatingIndicesX(xPosition);
+		currentTime = 0.0f;
+		isRotating = true;
 	}
-}
 
-void Rubiks::rotateCubesY(RubrikSection section, bool counterClockwise)
-{
-	float rotation = counterClockwise ? -90.0f : 90.0f;
-	float y = getSectionCoordinate(section);
-
-	for (int i = 0; i < 27; i++)
+	currentTime += deltaTime;
+	float targetRot = counterClockwise ? -90.0f : 90.0f;
+	targetRot = glm::radians(targetRot);
+	float timePercent = currentTime / rotationTime;
+	for (int i : rotatingIndices)
 	{
-		if (cubes.at(i).getCurrentPosition().y == y)
-		{
-			cubes.at(i).rotateYaw(rotation);
-			glm::vec3 clampedPosition = clampPosition(cubes.at(i).getCurrentPosition());
-			cubes.at(i).setCurrentPosition(clampedPosition);
-		}
+		cubes.at(i).rotateSmoothX(targetRot, timePercent);
 	}
-}
 
-void Rubiks::rotateCubesZ(RubrikSection section, bool counterClockwise)
-{
-	float rotation = counterClockwise ? -90.0f : 90.0f;
-	float z = getSectionCoordinate(section);
-
-	for (int i = 0; i < 27; i++)
+	if (currentTime >= rotationTime)
 	{
-		if (cubes.at(i).getCurrentPosition().z == z)
-		{
-			cubes.at(i).rotateRoll(rotation);
-			glm::vec3 clampedPosition = clampPosition(cubes.at(i).getCurrentPosition());
-			cubes.at(i).setCurrentPosition(clampedPosition);
-		}
+		//clampRotatingCubes();
+		isRotating = false;
+		rotatingIndices = std::vector<int>();
 	}
 }
 
@@ -148,6 +129,26 @@ float Rubiks::getSectionCoordinate(RubrikSection section) const
 	}
 
 	return 0.0f;
+}
+
+void Rubiks::findRotatingIndicesX(float xPosition)
+{
+	for (int i = 0; i < 27; i++)
+	{
+		if (cubes.at(i).getCurrentPosition().x == xPosition)
+		{
+			rotatingIndices.push_back(i);
+		}
+	}
+}
+
+void Rubiks::clampRotatingCubes()
+{
+	for (int i : rotatingIndices)
+	{
+		glm::vec3 currentPosition = cubes.at(i).getCurrentPosition();
+		cubes.at(i).setCurrentPosition(clampPosition(currentPosition));
+	}
 }
 
 // After a full rotation, ensure cube's position is clamped to an exact displacement

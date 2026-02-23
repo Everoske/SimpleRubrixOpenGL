@@ -134,14 +134,9 @@ int main()
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
-	Rubiks rubiksCube = Rubiks(0.6f, 0.0015f);
+	Rubiks rubiksCube = Rubiks(0.6f, 0.0015f, 2.0f);
 	
-	rubiksCube.rotateCubesX(RubrikSection::MIDDLE);
-	rubiksCube.rotateCubesY(RubrikSection::MIDDLE);
-	//rubiksCube.rotateCubesZ(RubrikSection::MIDDLE);
-	//rubiksCube.rotateCubesX(RubrikSection::MIDDLE);
-	//rubiksCube.rotateCubesZ(RubrikSection::MIDDLE);
-	//rubiksCube.rotateCubesX(RubrikSection::MIDDLE);
+	bool performRotation = true;
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -162,15 +157,19 @@ int main()
 
 		glBindVertexArray(VAO);
 
+		if (performRotation)
+		{
+			rubiksCube.rotateCubesSmoothX(RubrikSection::MIDDLE, deltaTime);
+			performRotation = rubiksCube.isRotationInProgress();
+		}
+
 		std::vector<Cube> rCubes = rubiksCube.getCubes();
 
 		for (unsigned int i = 0; i < 27; i++)
 		{
 			model = glm::mat4(1.0f);
 			glm::mat4x4 rotation = rCubes[i].getOrientation().toRotationMatrix();
-			model = glm::translate(model, rCubes[i].getCurrentPosition()) * rotation;
-			
-			model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
+			model = rCubes[i].getTransformationMatrix();
 			glUniformMatrix4fv(glGetUniformLocation(colorShader, "model"), 1, GL_FALSE, &model[0][0]);
 			rCubes[i].bindFaceColors(colorShader);
 			glDrawArrays(GL_TRIANGLES, 0, 36);

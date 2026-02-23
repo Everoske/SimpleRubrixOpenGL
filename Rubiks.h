@@ -14,21 +14,27 @@ enum RubrikSection
 class Rubiks
 {
 public:
-	Rubiks(float cubeDisplacement, float floatMargin);
+	Rubiks(float cubeDisplacement, float floatMargin, float targetTime);
 	
-	void rotateCubesX(RubrikSection section, bool counterClockwise = false);
-	void rotateCubesY(RubrikSection section, bool counterClockwise = false);
-	void rotateCubesZ(RubrikSection section, bool counterClockwise = false);
+	void rotateCubesSmoothX(RubrikSection section, float deltaTime, bool counterClockwise = false);
 
 	std::vector<Cube> getCubes() { return cubes; }
+	bool isRotationInProgress() const { return isRotating; }
 
 private:
 	std::vector<Cube> cubes;
+	std::vector<int> rotatingIndices;
 	float displacement;
 	float errorMargin;
 
+	bool isRotating;
+	float currentTime;
+	float rotationTime;
+
 	void createCubes();
 	float getSectionCoordinate(RubrikSection section) const;
+	void findRotatingIndicesX(float xPosition);
+	void clampRotatingCubes();
 	float clampCoordinate(float coordinate) const;
 	glm::vec3 clampPosition(const glm::vec3& position) const;
 };

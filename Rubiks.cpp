@@ -90,6 +90,27 @@ void Rubiks::rotateCubesSmoothZ(RubrikSection section, float deltaTime, bool cou
 	}
 }
 
+// TODO: Should perform several successive smooth rotations over multiple frames
+//       Should probably have a means of knowing when it starts and end
+//       For now, use a random number for Axis and Section
+//       Should I include some kind of Update function?
+void Rubiks::scrambleSmooth(float deltaTime)
+{
+	// If Not Scrambling: Do Scramble Setup
+
+
+	// If Current Rotation Concludes: Start Next Rotation
+
+	// If Last Rotation Concludes: Stop Scramble
+}
+
+// TODO: Should perform several successive rotations instantly (no SLERPING!)
+//       All rotations should be performed in a single frame
+void Rubiks::scrambleImmediate()
+{
+
+}
+
 void Rubiks::createCubes()
 {
 	const glm::vec3 Green = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -195,8 +216,7 @@ void Rubiks::findRotatingIndicesX(float xPosition)
 			rotatingIndices.push_back(i);
 		}
 	}
-
-	std::cout << "Rotating " << rotatingIndices.size() << " Cubes" << std::endl;
+	//std::cout << "Rotating " << rotatingIndices.size() << " Cubes" << std::endl;
 }
 
 void Rubiks::findRotatingIndicesY(float yPosition)
@@ -208,8 +228,7 @@ void Rubiks::findRotatingIndicesY(float yPosition)
 			rotatingIndices.push_back(i);
 		}
 	}
-
-	std::cout << "Rotating " << rotatingIndices.size() << " Cubes" << std::endl;
+	//std::cout << "Rotating " << rotatingIndices.size() << " Cubes" << std::endl;
 }
 
 void Rubiks::findRotatingIndicesZ(float zPosition)
@@ -221,10 +240,10 @@ void Rubiks::findRotatingIndicesZ(float zPosition)
 			rotatingIndices.push_back(i);
 		}
 	}
-
-	std::cout << "Rotating " << rotatingIndices.size() << " Cubes" << std::endl;
+	//std::cout << "Rotating " << rotatingIndices.size() << " Cubes" << std::endl;
 }
 
+// TODO: Remove and move logic into Cube?
 void Rubiks::clampRotatingCubes()
 {
 	for (int i : rotatingIndices)
@@ -234,6 +253,7 @@ void Rubiks::clampRotatingCubes()
 	}
 }
 
+// TODO: Move this into the Cube class?
 // After a full rotation, ensure cube's position is clamped to an exact displacement
 float Rubiks::clampCoordinate(float coordinate) const
 {
@@ -246,10 +266,22 @@ float Rubiks::clampCoordinate(float coordinate) const
 	return coordinate;
 }
 
+// TODO: Move this into the Cube class?
 glm::vec3 Rubiks::clampPosition(const glm::vec3& position) const
 {
 	std::cout << position.x << ", " << position.y << ", " << position.z << std::endl;
 	glm::vec3 newPos = glm::vec3(clampCoordinate(position.x), clampCoordinate(position.y), clampCoordinate(position.z));
 	std::cout << newPos.x << ", " << newPos.y << ", " << newPos.z << std::endl;
 	return newPos;
+}
+
+void Rubiks::startScrambleRotation(int axis, int sectionInt, float deltaTime, bool counterClockwise)
+{
+	RubrikSection section = static_cast<RubrikSection>(sectionInt);
+	if (axis == 1)
+		rotateCubesSmoothX(section, deltaTime, counterClockwise);
+	else if (axis == 2)
+		rotateCubesSmoothY(section, deltaTime, counterClockwise);
+	else
+		rotateCubesSmoothZ(section, deltaTime, counterClockwise);
 }

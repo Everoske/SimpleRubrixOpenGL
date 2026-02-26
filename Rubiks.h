@@ -20,6 +20,9 @@ public:
 	void rotateCubesSmoothY(RubrikSection section, float deltaTime, bool counterClockwise = false);
 	void rotateCubesSmoothZ(RubrikSection section, float deltaTime, bool counterClockwise = false);
 
+	void scrambleSmooth(float deltaTime);
+	void scrambleImmediate();
+
 	std::vector<Cube> getCubes() { return cubes; }
 	bool isRotationInProgress() const { return isRotating; }
 
@@ -41,6 +44,8 @@ private:
 	void clampRotatingCubes();
 	float clampCoordinate(float coordinate) const;
 	glm::vec3 clampPosition(const glm::vec3& position) const;
+
+	void startScrambleRotation(int axis, int sectionInt, float deltaTime, bool counterClockwise = false);
 };
 
 

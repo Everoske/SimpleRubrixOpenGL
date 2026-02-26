@@ -82,7 +82,6 @@ void Cube::rotateSmoothY(float radians, float timePercent)
 		setOrientation(targetOrientation);
 		glm::vec3 newPosition = Quaternion::rotatePoint(glm::vec3(0.0f, -1.0f, 0.0f), lastFixedPosition, radians);
 		setCurrentPosition(newPosition);
-		std::cout << currentPosition.x << "," << currentPosition.y << "," << currentPosition.z << std::endl;
 		isRotating = false;
 	}
 

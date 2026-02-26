@@ -55,13 +55,65 @@ void Cube::rotateSmoothX(float radians, float timePercent)
 	{
 		setOrientation(targetOrientation);
 		glm::vec3 newPosition = Quaternion::rotatePoint(glm::vec3(1.0f, 0.0f, 0.0f), lastFixedPosition, radians);
-		currentPosition = newPosition;
+		setCurrentPosition(newPosition);
 		std::cout << currentPosition.x << "," << currentPosition.y << "," << currentPosition.z << std::endl;
 		isRotating = false;
 	}
 	
 	orientation = Quaternion::slerp(lastFixedOrientation, targetOrientation, timePercent);
 	glm::vec3 newPosition = Quaternion::slerpPoint(lastFixedPosition, glm::vec3(1.0f, 0.0f, 0.0f), radians, timePercent);
+	currentPosition = newPosition;
+}
+
+void Cube::rotateSmoothY(float radians, float timePercent)
+{
+	if (!isRotating)
+	{
+		isRotating = true;
+		lastFixedPosition = currentPosition;
+		lastFixedOrientation = orientation;
+	}
+
+	Quaternion targetRotator = Quaternion::getRotationQuaternion(up, radians);
+	Quaternion targetOrientation = targetRotator * lastFixedOrientation;
+
+	if (timePercent >= 1.0f)
+	{
+		setOrientation(targetOrientation);
+		glm::vec3 newPosition = Quaternion::rotatePoint(glm::vec3(0.0f, -1.0f, 0.0f), lastFixedPosition, radians);
+		setCurrentPosition(newPosition);
+		std::cout << currentPosition.x << "," << currentPosition.y << "," << currentPosition.z << std::endl;
+		isRotating = false;
+	}
+
+	orientation = Quaternion::slerp(lastFixedOrientation, targetOrientation, timePercent);
+	glm::vec3 newPosition = Quaternion::slerpPoint(lastFixedPosition, glm::vec3(0.0f, -1.0f, 0.0f), radians, timePercent);
+	currentPosition = newPosition;
+}
+
+void Cube::rotateSmoothZ(float radians, float timePercent)
+{
+	if (!isRotating)
+	{
+		isRotating = true;
+		lastFixedPosition = currentPosition;
+		lastFixedOrientation = orientation;
+	}
+
+	Quaternion targetRotator = Quaternion::getRotationQuaternion(forward, radians);
+	Quaternion targetOrientation = targetRotator * lastFixedOrientation;
+
+	if (timePercent >= 1.0f)
+	{
+		setOrientation(targetOrientation);
+		glm::vec3 newPosition = Quaternion::rotatePoint(glm::vec3(0.0f, 0.0f, 1.0f), lastFixedPosition, radians);
+		setCurrentPosition(newPosition);
+		std::cout << currentPosition.x << "," << currentPosition.y << "," << currentPosition.z << std::endl;
+		isRotating = false;
+	}
+
+	orientation = Quaternion::slerp(lastFixedOrientation, targetOrientation, timePercent);
+	glm::vec3 newPosition = Quaternion::slerpPoint(lastFixedPosition, glm::vec3(0.0f, 0.0f, 1.0f), radians, timePercent);
 	currentPosition = newPosition;
 }
 
@@ -79,6 +131,8 @@ void Cube::setCurrentPosition(const glm::vec3& position)
 	if (currentPosition == startingPosition)
 	{
 		orientation = Quaternion();
+		up = glm::vec3(0.0f, 1.0f, 0.0f);
+		forward = glm::vec3(0.0f, 0.0f, -1.0f);
 	}
 }
 

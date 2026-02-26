@@ -19,6 +19,8 @@ public:
 	void bindFaceColors(const unsigned int shaderID);
 
 	void rotateSmoothX(float radians, float timePercent);
+	void rotateSmoothY(float radians, float timePercent);
+	void rotateSmoothZ(float radians, float timePercent);
 
 	void setStartPosition(const glm::vec3& position);
 	void setCurrentPosition(const glm::vec3& position);

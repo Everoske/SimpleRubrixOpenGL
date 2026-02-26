@@ -1,4 +1,5 @@
 #include "Rubiks.h"
+#include <iostream>
 
 Rubiks::Rubiks(float cubeDisplacement, float floatMargin, float rotationTime) :
 	displacement(cubeDisplacement), errorMargin(floatMargin), rotationTime(rotationTime)
@@ -29,7 +30,61 @@ void Rubiks::rotateCubesSmoothX(RubrikSection section, float deltaTime, bool cou
 
 	if (currentTime >= rotationTime)
 	{
-		//clampRotatingCubes();
+		clampRotatingCubes();
+		isRotating = false;
+		rotatingIndices = std::vector<int>();
+	}
+}
+
+void Rubiks::rotateCubesSmoothY(RubrikSection section, float deltaTime, bool counterClockwise)
+{
+	if (!isRotating)
+	{
+		float yPosition = getSectionCoordinate(section);
+		findRotatingIndicesY(yPosition);
+		currentTime = 0.0f;
+		isRotating = true;
+	}
+
+	currentTime += deltaTime;
+	float targetRot = counterClockwise ? -90.0f : 90.0f;
+	targetRot = glm::radians(targetRot);
+	float timePercent = currentTime / rotationTime;
+	for (int i : rotatingIndices)
+	{
+		cubes.at(i).rotateSmoothY(targetRot, timePercent);
+	}
+
+	if (currentTime >= rotationTime)
+	{
+		clampRotatingCubes();
+		isRotating = false;
+		rotatingIndices = std::vector<int>();
+	}
+}
+
+void Rubiks::rotateCubesSmoothZ(RubrikSection section, float deltaTime, bool counterClockwise)
+{
+	if (!isRotating)
+	{
+		float zPosition = getSectionCoordinate(section);
+		findRotatingIndicesZ(zPosition);
+		currentTime = 0.0f;
+		isRotating = true;
+	}
+
+	currentTime += deltaTime;
+	float targetRot = counterClockwise ? -90.0f : 90.0f;
+	targetRot = glm::radians(targetRot);
+	float timePercent = currentTime / rotationTime;
+	for (int i : rotatingIndices)
+	{
+		cubes.at(i).rotateSmoothZ(targetRot, timePercent);
+	}
+
+	if (currentTime >= rotationTime)
+	{
+		clampRotatingCubes();
 		isRotating = false;
 		rotatingIndices = std::vector<int>();
 	}
@@ -140,6 +195,34 @@ void Rubiks::findRotatingIndicesX(float xPosition)
 			rotatingIndices.push_back(i);
 		}
 	}
+
+	std::cout << "Rotating " << rotatingIndices.size() << " Cubes" << std::endl;
+}
+
+void Rubiks::findRotatingIndicesY(float yPosition)
+{
+	for (int i = 0; i < 27; i++)
+	{
+		if (cubes.at(i).getCurrentPosition().y == yPosition)
+		{
+			rotatingIndices.push_back(i);
+		}
+	}
+
+	std::cout << "Rotating " << rotatingIndices.size() << " Cubes" << std::endl;
+}
+
+void Rubiks::findRotatingIndicesZ(float zPosition)
+{
+	for (int i = 0; i < 27; i++)
+	{
+		if (cubes.at(i).getCurrentPosition().z == zPosition)
+		{
+			rotatingIndices.push_back(i);
+		}
+	}
+
+	std::cout << "Rotating " << rotatingIndices.size() << " Cubes" << std::endl;
 }
 
 void Rubiks::clampRotatingCubes()
@@ -156,15 +239,17 @@ float Rubiks::clampCoordinate(float coordinate) const
 {
 	if (coordinate > -errorMargin && coordinate < errorMargin)
 		return 0.0f;
-	if (coordinate > errorMargin && coordinate < displacement || coordinate > displacement - errorMargin)
+	if (coordinate > errorMargin && coordinate < displacement || coordinate > displacement)
 		return displacement;
-	if (coordinate < -errorMargin && coordinate > -displacement || coordinate < -displacement + errorMargin)
+	if (coordinate < -errorMargin && coordinate > -displacement || coordinate < -displacement)
 		return -displacement;
-
 	return coordinate;
 }
 
 glm::vec3 Rubiks::clampPosition(const glm::vec3& position) const
 {
-	return glm::vec3(clampCoordinate(position.x), clampCoordinate(position.y), clampCoordinate(position.z));
+	std::cout << position.x << ", " << position.y << ", " << position.z << std::endl;
+	glm::vec3 newPos = glm::vec3(clampCoordinate(position.x), clampCoordinate(position.y), clampCoordinate(position.z));
+	std::cout << newPos.x << ", " << newPos.y << ", " << newPos.z << std::endl;
+	return newPos;
 }

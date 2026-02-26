@@ -134,9 +134,12 @@ int main()
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
-	Rubiks rubiksCube = Rubiks(0.6f, 0.0015f, 2.0f);
+	Rubiks rubiksCube = Rubiks(0.6f, 0.15f, 2.0f);
 	
-	bool performRotation = true;
+	//bool performRotation = true;
+	bool performFirstRotation = true;
+	bool performSecondRotation = false;
+	bool performThirdRotation = false;
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -157,10 +160,24 @@ int main()
 
 		glBindVertexArray(VAO);
 
-		if (performRotation)
+		if (performFirstRotation)
 		{
 			rubiksCube.rotateCubesSmoothX(RubrikSection::MIDDLE, deltaTime);
-			performRotation = rubiksCube.isRotationInProgress();
+			performFirstRotation = rubiksCube.isRotationInProgress();
+			performSecondRotation = !performFirstRotation;
+		}
+
+		if (performSecondRotation)
+		{
+			rubiksCube.rotateCubesSmoothY(RubrikSection::MIDDLE, deltaTime);
+			performSecondRotation = rubiksCube.isRotationInProgress();
+			performThirdRotation = !performSecondRotation;
+		}
+
+		if (performThirdRotation)
+		{
+			rubiksCube.rotateCubesSmoothZ(RubrikSection::MIDDLE, deltaTime);
+			performThirdRotation = rubiksCube.isRotationInProgress();
 		}
 
 		std::vector<Cube> rCubes = rubiksCube.getCubes();

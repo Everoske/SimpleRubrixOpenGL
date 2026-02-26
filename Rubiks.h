@@ -17,6 +17,8 @@ public:
 	Rubiks(float cubeDisplacement, float floatMargin, float targetTime);
 	
 	void rotateCubesSmoothX(RubrikSection section, float deltaTime, bool counterClockwise = false);
+	void rotateCubesSmoothY(RubrikSection section, float deltaTime, bool counterClockwise = false);
+	void rotateCubesSmoothZ(RubrikSection section, float deltaTime, bool counterClockwise = false);
 
 	std::vector<Cube> getCubes() { return cubes; }
 	bool isRotationInProgress() const { return isRotating; }
@@ -34,6 +36,8 @@ private:
 	void createCubes();
 	float getSectionCoordinate(RubrikSection section) const;
 	void findRotatingIndicesX(float xPosition);
+	void findRotatingIndicesY(float yPosition);
+	void findRotatingIndicesZ(float zPosition);
 	void clampRotatingCubes();
 	float clampCoordinate(float coordinate) const;
 	glm::vec3 clampPosition(const glm::vec3& position) const;

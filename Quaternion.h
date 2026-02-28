@@ -10,6 +10,7 @@
 class Quaternion
 {
 public:
+	// TODO: Try switching to doubles
 	Quaternion() : w{ 1.0f }, v{ 0.0f } {}
 	Quaternion(float s, float v1, float v2, float v3) : w{ s }, v{ v1, v2, v3 } {}
 	Quaternion(float s, glm::vec3 vec) : w{ s }, v{ vec.x, vec.y, vec.z } {}

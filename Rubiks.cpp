@@ -1,5 +1,7 @@
 #include "Rubiks.h"
 #include <iostream>
+#include <cstdlib>
+#include <ctime>
 
 Rubiks::Rubiks(float cubeDisplacement, float floatMargin, float rotationTime) :
 	displacement(cubeDisplacement), errorMargin(floatMargin), rotationTime(rotationTime)
@@ -33,6 +35,8 @@ void Rubiks::rotateCubesSmoothX(RubrikSection section, float deltaTime, bool cou
 		clampRotatingCubes();
 		isRotating = false;
 		rotatingIndices = std::vector<int>();
+		if (onRotationComplete)
+			onRotationComplete();
 	}
 }
 
@@ -60,6 +64,8 @@ void Rubiks::rotateCubesSmoothY(RubrikSection section, float deltaTime, bool cou
 		clampRotatingCubes();
 		isRotating = false;
 		rotatingIndices = std::vector<int>();
+		if (onRotationComplete)
+			onRotationComplete();
 	}
 }
 
@@ -87,6 +93,8 @@ void Rubiks::rotateCubesSmoothZ(RubrikSection section, float deltaTime, bool cou
 		clampRotatingCubes();
 		isRotating = false;
 		rotatingIndices = std::vector<int>();
+		if (onRotationComplete)
+			onRotationComplete();
 	}
 }
 
@@ -97,11 +105,32 @@ void Rubiks::rotateCubesSmoothZ(RubrikSection section, float deltaTime, bool cou
 void Rubiks::scrambleSmooth(float deltaTime)
 {
 	// If Not Scrambling: Do Scramble Setup
+	if (!isScrambling)
+	{
+		currentScrambleRotations = 0;
+		startScrambleRotation();
+		performScrambleRotation(deltaTime);
+		return;
+	}
 
-
-	// If Current Rotation Concludes: Start Next Rotation
-
-	// If Last Rotation Concludes: Stop Scramble
+	if (isRotating)
+	{
+		performScrambleRotation(deltaTime);
+	}
+	else
+	{
+		currentScrambleRotations++;
+		if (currentScrambleRotations < totalScrambleRotations)
+		{
+			startScrambleRotation();
+			performScrambleRotation(deltaTime);
+		}
+		else
+		{
+			isScrambling = false;
+			onScrambleComplete();
+		}
+	}
 }
 
 // TODO: Should perform several successive rotations instantly (no SLERPING!)
@@ -275,13 +304,31 @@ glm::vec3 Rubiks::clampPosition(const glm::vec3& position) const
 	return newPos;
 }
 
-void Rubiks::startScrambleRotation(int axis, int sectionInt, float deltaTime, bool counterClockwise)
+void Rubiks::startScrambleRotation()
 {
-	RubrikSection section = static_cast<RubrikSection>(sectionInt);
-	if (axis == 1)
-		rotateCubesSmoothX(section, deltaTime, counterClockwise);
-	else if (axis == 2)
-		rotateCubesSmoothY(section, deltaTime, counterClockwise);
-	else
-		rotateCubesSmoothZ(section, deltaTime, counterClockwise);
+	// Probably want to make sure you do not do the same
+	// axis + section combo. Looks kind of lame when it happens
+	// AND IT HAPPENS WAY TOO MUCH
+	srand(time(0));
+	scrambleAxis = (rand() % 3) + 1;
+	std::cout << "scrambleAxis: " << scrambleAxis << std::endl;
+	int sectionInt = (rand() % 3) + 1;
+	scrambleSection = static_cast<RubrikSection>(sectionInt);
+	isScrambling = true;
+}
+
+void Rubiks::performScrambleRotation(float deltaTime)
+{
+	switch (scrambleAxis)
+	{
+	case 1:
+		rotateCubesSmoothX(scrambleSection, deltaTime);
+		break;
+	case 2:
+		rotateCubesSmoothY(scrambleSection, deltaTime);
+		break;
+	case 3:
+		rotateCubesSmoothZ(scrambleSection, deltaTime);
+		break;
+	}
 }

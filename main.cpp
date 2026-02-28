@@ -32,6 +32,8 @@ void loadShaderCode(const char* shaderPath, std::string& code);
 void mouseCallback(GLFWwindow* window, double xPosInput, double yPosInput);
 void processDeltaTime();
 void processInput(GLFWwindow* window);
+void onRotationCompleted();
+void onScrambleCompleted();
 
 const glm::vec3 Green = glm::vec3(0.0f, 1.0f, 0.0f);
 const glm::vec3 Red = glm::vec3(1.0f, 0.0f, 0.0f);
@@ -40,6 +42,9 @@ const glm::vec3 Yellow = glm::vec3(1.0f, 1.0f, 0.0f);
 const glm::vec3 White = glm::vec3(1.0f);
 const glm::vec3 Blue = glm::vec3(0.0f, 0.0f, 1.0f);
 const glm::vec3 Black = glm::vec3(0.05f, 0.05f, 0.05f);
+
+// Temp Game Settings
+bool isScrambling = false;
 
 int main()
 {
@@ -134,12 +139,15 @@ int main()
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
-	Rubiks rubiksCube = Rubiks(0.6f, 0.15f, 2.0f);
+	Rubiks rubiksCube = Rubiks(0.6f, 0.15f, 1.0f);
 	
 	//bool performRotation = true;
-	bool performFirstRotation = true;
+	/*bool performFirstRotation = true;
 	bool performSecondRotation = false;
-	bool performThirdRotation = false;
+	bool performThirdRotation = false;*/
+
+	rubiksCube.setOnScrambleComplete(onScrambleCompleted);
+	isScrambling = true;
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -160,16 +168,21 @@ int main()
 
 		glBindVertexArray(VAO);
 
-		if (performFirstRotation)
+		if (isScrambling)
 		{
-			rubiksCube.rotateCubesSmoothX(RubrikSection::MIDDLE, deltaTime);
+			rubiksCube.scrambleSmooth(deltaTime);
+		}
+
+		/*if (performFirstRotation)
+		{
+			rubiksCube.rotateCubesSmoothX(RubrikSection::BACK, deltaTime);
 			performFirstRotation = rubiksCube.isRotationInProgress();
 			performSecondRotation = !performFirstRotation;
 		}
 
 		if (performSecondRotation)
 		{
-			rubiksCube.rotateCubesSmoothY(RubrikSection::MIDDLE, deltaTime);
+			rubiksCube.rotateCubesSmoothY(RubrikSection::FRONT, deltaTime);
 			performSecondRotation = rubiksCube.isRotationInProgress();
 			performThirdRotation = !performSecondRotation;
 		}
@@ -178,7 +191,7 @@ int main()
 		{
 			rubiksCube.rotateCubesSmoothZ(RubrikSection::MIDDLE, deltaTime);
 			performThirdRotation = rubiksCube.isRotationInProgress();
-		}
+		}*/
 
 		std::vector<Cube> rCubes = rubiksCube.getCubes();
 
@@ -316,4 +329,15 @@ void processInput(GLFWwindow* window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
+}
+
+
+void onRotationCompleted()
+{
+	
+}
+
+void onScrambleCompleted()
+{
+	isScrambling = false;
 }

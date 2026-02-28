@@ -11,6 +11,9 @@ enum RubrikSection
 	BACK = 3
 };
 
+typedef void (*PFnOnRotationComplete)();
+typedef void (*PFnOnScrambleComplete)();
+
 class Rubiks
 {
 public:
@@ -25,6 +28,8 @@ public:
 
 	std::vector<Cube> getCubes() { return cubes; }
 	bool isRotationInProgress() const { return isRotating; }
+	void setRotationCompleteCallback(PFnOnRotationComplete onComplete) { onRotationComplete = onComplete; }
+	void setOnScrambleComplete(PFnOnScrambleComplete onComplete) { onScrambleComplete = onComplete; }
 
 private:
 	std::vector<Cube> cubes;
@@ -35,6 +40,14 @@ private:
 	bool isRotating;
 	float currentTime;
 	float rotationTime;
+	bool isScrambling = false;
+	int scrambleAxis = -1;
+	int totalScrambleRotations = 40;
+	int currentScrambleRotations = 0;
+	RubrikSection scrambleSection;
+
+	PFnOnRotationComplete onRotationComplete;
+	PFnOnScrambleComplete onScrambleComplete;
 
 	void createCubes();
 	float getSectionCoordinate(RubrikSection section) const;
@@ -45,7 +58,8 @@ private:
 	float clampCoordinate(float coordinate) const;
 	glm::vec3 clampPosition(const glm::vec3& position) const;
 
-	void startScrambleRotation(int axis, int sectionInt, float deltaTime, bool counterClockwise = false);
+	void startScrambleRotation();
+	void performScrambleRotation(float deltaTime);
 };
 
 

@@ -98,32 +98,30 @@ void Rubiks::rotateCubesSmoothZ(RubrikSection section, float deltaTime, bool cou
 	}
 }
 
-// TODO: Should perform several successive smooth rotations over multiple frames
-//       Should probably have a means of knowing when it starts and end
-//       For now, use a random number for Axis and Section
-//       Should I include some kind of Update function?
 void Rubiks::scrambleSmooth(float deltaTime)
 {
 	// If Not Scrambling: Do Scramble Setup
 	if (!isScrambling)
 	{
 		currentScrambleRotations = 0;
-		startScrambleRotation();
-		performScrambleRotation(deltaTime);
+		setupScrambleRotation();
+		isScrambling = true;
+		performSmoothScrambleRotation(deltaTime);
 		return;
 	}
 
 	if (isRotating)
 	{
-		performScrambleRotation(deltaTime);
+		performSmoothScrambleRotation(deltaTime);
 	}
 	else
 	{
 		currentScrambleRotations++;
 		if (currentScrambleRotations < totalScrambleRotations)
 		{
-			startScrambleRotation();
-			performScrambleRotation(deltaTime);
+			setupScrambleRotation();
+			isScrambling = true;
+			performSmoothScrambleRotation(deltaTime);
 		}
 		else
 		{
@@ -133,11 +131,26 @@ void Rubiks::scrambleSmooth(float deltaTime)
 	}
 }
 
-// TODO: Should perform several successive rotations instantly (no SLERPING!)
-//       All rotations should be performed in a single frame
 void Rubiks::scrambleImmediate()
 {
+	if (!isScrambling)
+	{
+		currentScrambleRotations = 0;
+	}
+	else
+	{
+		isScrambling = false;
+	}
 
+	int remaining = isRotating ? currentScrambleRotations : currentScrambleRotations + 1;
+	for (remaining; remaining < totalScrambleRotations; remaining++)
+	{
+		setupScrambleRotation();
+		performImmediateScrambleRotation();
+	}
+
+	if (onScrambleComplete)
+		onScrambleComplete();
 }
 
 void Rubiks::createCubes()
@@ -245,7 +258,6 @@ void Rubiks::findRotatingIndicesX(float xPosition)
 			rotatingIndices.push_back(i);
 		}
 	}
-	//std::cout << "Rotating " << rotatingIndices.size() << " Cubes" << std::endl;
 }
 
 void Rubiks::findRotatingIndicesY(float yPosition)
@@ -257,7 +269,6 @@ void Rubiks::findRotatingIndicesY(float yPosition)
 			rotatingIndices.push_back(i);
 		}
 	}
-	//std::cout << "Rotating " << rotatingIndices.size() << " Cubes" << std::endl;
 }
 
 void Rubiks::findRotatingIndicesZ(float zPosition)
@@ -269,7 +280,6 @@ void Rubiks::findRotatingIndicesZ(float zPosition)
 			rotatingIndices.push_back(i);
 		}
 	}
-	//std::cout << "Rotating " << rotatingIndices.size() << " Cubes" << std::endl;
 }
 
 // TODO: Remove and move logic into Cube?
@@ -282,8 +292,6 @@ void Rubiks::clampRotatingCubes()
 	}
 }
 
-// TODO: Move this into the Cube class?
-// After a full rotation, ensure cube's position is clamped to an exact displacement
 float Rubiks::clampCoordinate(float coordinate) const
 {
 	if (coordinate > -errorMargin && coordinate < errorMargin)
@@ -295,29 +303,115 @@ float Rubiks::clampCoordinate(float coordinate) const
 	return coordinate;
 }
 
-// TODO: Move this into the Cube class?
 glm::vec3 Rubiks::clampPosition(const glm::vec3& position) const
 {
-	//std::cout << position.x << ", " << position.y << ", " << position.z << std::endl;
 	glm::vec3 newPos = glm::vec3(clampCoordinate(position.x), clampCoordinate(position.y), clampCoordinate(position.z));
-	//std::cout << newPos.x << ", " << newPos.y << ", " << newPos.z << std::endl;
 	return newPos;
 }
 
-void Rubiks::startScrambleRotation()
+void Rubiks::rotateCubesX(RubrikSection section)
 {
-	// Probably want to make sure you do not do the same
-	// axis + section combo. Looks kind of lame when it happens
-	// AND IT HAPPENS WAY TOO MUCH
-	srand(time(0));
-	scrambleAxis = (rand() % 3) + 1;
-	std::cout << "scrambleAxis: " << scrambleAxis << std::endl;
-	int sectionInt = (rand() % 3) + 1;
-	scrambleSection = static_cast<RubrikSection>(sectionInt);
-	isScrambling = true;
+	if (!isRotating)
+	{
+		float xPosition = getSectionCoordinate(section);
+		findRotatingIndicesX(xPosition);
+	}
+	else
+	{
+		isRotating = false;
+	}
+
+	constexpr float targetRot = glm::radians(90.0f);
+	for (int i : rotatingIndices)
+	{
+		cubes.at(i).rotateXImmediate(targetRot);
+	}
+
+	clampRotatingCubes();
+	rotatingIndices = std::vector<int>();
 }
 
-void Rubiks::performScrambleRotation(float deltaTime)
+void Rubiks::rotateCubesY(RubrikSection section)
+{
+	if (!isRotating)
+	{
+		float yPosition = getSectionCoordinate(section);
+		findRotatingIndicesY(yPosition);
+	}
+	else
+	{
+		isRotating = false;
+	}
+
+	constexpr float targetRot = glm::radians(90.0f);
+	for (int i : rotatingIndices)
+	{
+		cubes.at(i).rotateYImmediate(targetRot);
+	}
+
+	clampRotatingCubes();
+	rotatingIndices = std::vector<int>();
+}
+
+void Rubiks::rotateCubesZ(RubrikSection section)
+{
+	if (!isRotating)
+	{
+		float zPosition = getSectionCoordinate(section);
+		findRotatingIndicesZ(zPosition);
+	}
+	else
+	{
+		isRotating = false;
+	}
+
+	constexpr float targetRot = glm::radians(90.0f);
+	for (int i : rotatingIndices)
+	{
+		cubes.at(i).rotateZImmediate(targetRot);
+	}
+
+	clampRotatingCubes();
+	rotatingIndices = std::vector<int>();
+}
+
+void Rubiks::setupScrambleRotation()
+{
+	srand(time(0));
+	int newAxis = (rand() % 3) + 1;
+	int newSection = (rand() % 3) + 1;
+	int oldSection = (int) scrambleSection;
+
+	if (newAxis == scrambleAxis && newSection == oldSection)
+	{
+		if (newAxis == newSection)
+		{
+			newAxis = ((newAxis + 4) % 3) + 1;
+			newSection = ((newSection + 2) % 3) + 1;
+		}
+		else if (newAxis % 2 > 0 && newSection % 2 > 0)
+		{
+			newAxis = ((newAxis + 4) % 3) + 1;
+			newSection = ((newSection + 4) % 3) + 1;
+		}
+		else if (newAxis % 2 == 0 && newSection % 2 == 0)
+		{
+			newAxis = ((newAxis + 2) % 3) + 1;
+			newSection = ((newSection + 2) % 3) + 1;
+		}
+		else
+		{
+			int temp = newAxis;
+			newAxis = newSection;
+			newSection = temp;
+		}
+	}
+
+	scrambleAxis = newAxis;
+	scrambleSection = static_cast<RubrikSection>(newSection);
+}
+
+void Rubiks::performSmoothScrambleRotation(float deltaTime)
 {
 	switch (scrambleAxis)
 	{
@@ -329,6 +423,22 @@ void Rubiks::performScrambleRotation(float deltaTime)
 		break;
 	case 3:
 		rotateCubesSmoothZ(scrambleSection, deltaTime);
+		break;
+	}
+}
+
+void Rubiks::performImmediateScrambleRotation()
+{
+	switch (scrambleAxis)
+	{
+	case 1:
+		rotateCubesX(scrambleSection);
+		break;
+	case 2:
+		rotateCubesY(scrambleSection);
+		break;
+	case 3:
+		rotateCubesZ(scrambleSection);
 		break;
 	}
 }

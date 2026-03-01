@@ -118,6 +118,65 @@ void Cube::rotateSmoothZ(float radians, float timePercent)
 	currentPosition = newPosition;
 }
 
+void Cube::rotateXImmediate(float radians)
+{
+	if (isRotating)
+	{
+		isRotating = false;
+	}
+	else
+	{
+		lastFixedPosition = currentPosition;
+		lastFixedOrientation = orientation;
+	}
+
+	glm::vec3 rightVector = glm::cross(up, forward);
+	rightVector = glm::vec3(clampNormalScalar(rightVector.x), clampNormalScalar(rightVector.y), clampNormalScalar(rightVector.z));
+	Quaternion targetRotator = Quaternion::getRotationQuaternion(rightVector, radians);
+	Quaternion targetOrientation = targetRotator * lastFixedOrientation;
+	setOrientation(targetOrientation);
+	glm::vec3 newPosition = Quaternion::rotatePoint(glm::vec3(1.0f, 0.0f, 0.0f), lastFixedPosition, radians);
+	setCurrentPosition(newPosition);
+}
+
+void Cube::rotateYImmediate(float radians)
+{
+	if (isRotating)
+	{
+		isRotating = false;
+	}
+	else
+	{
+		lastFixedPosition = currentPosition;
+		lastFixedOrientation = orientation;
+	}
+
+	Quaternion targetRotator = Quaternion::getRotationQuaternion(up, radians);
+	Quaternion targetOrientation = targetRotator * lastFixedOrientation;
+	setOrientation(targetOrientation);
+	glm::vec3 newPosition = Quaternion::rotatePoint(glm::vec3(0.0f, -1.0f, 0.0f), lastFixedPosition, radians);
+	setCurrentPosition(newPosition);
+}
+
+void Cube::rotateZImmediate(float radians)
+{
+	if (isRotating)
+	{
+		isRotating = false;
+	}
+	else
+	{
+		lastFixedPosition = currentPosition;
+		lastFixedOrientation = orientation;
+	}
+
+	Quaternion targetRotator = Quaternion::getRotationQuaternion(forward, radians);
+	Quaternion targetOrientation = targetRotator * lastFixedOrientation;
+	setOrientation(targetOrientation);
+	glm::vec3 newPosition = Quaternion::rotatePoint(glm::vec3(0.0f, 0.0f, 1.0f), lastFixedPosition, radians);
+	setCurrentPosition(newPosition);
+}
+
 void Cube::setStartPosition(const glm::vec3& position)
 {
 	startingPosition = position;

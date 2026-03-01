@@ -22,6 +22,10 @@ public:
 	void rotateSmoothY(float radians, float timePercent);
 	void rotateSmoothZ(float radians, float timePercent);
 
+	void rotateXImmediate(float radians);
+	void rotateYImmediate(float radians);
+	void rotateZImmediate(float radians);
+
 	void setStartPosition(const glm::vec3& position);
 	void setCurrentPosition(const glm::vec3& position);
 	void setOrientation(const Quaternion& newOrientation);

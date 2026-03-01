@@ -140,11 +140,6 @@ int main()
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
 	Rubiks rubiksCube = Rubiks(0.6f, 0.15f, 1.0f);
-	
-	//bool performRotation = true;
-	/*bool performFirstRotation = true;
-	bool performSecondRotation = false;
-	bool performThirdRotation = false;*/
 
 	rubiksCube.setOnScrambleComplete(onScrambleCompleted);
 	isScrambling = true;
@@ -170,28 +165,9 @@ int main()
 
 		if (isScrambling)
 		{
-			rubiksCube.scrambleSmooth(deltaTime);
+			//rubiksCube.scrambleSmooth(deltaTime);
+			rubiksCube.scrambleImmediate();
 		}
-
-		/*if (performFirstRotation)
-		{
-			rubiksCube.rotateCubesSmoothX(RubrikSection::BACK, deltaTime);
-			performFirstRotation = rubiksCube.isRotationInProgress();
-			performSecondRotation = !performFirstRotation;
-		}
-
-		if (performSecondRotation)
-		{
-			rubiksCube.rotateCubesSmoothY(RubrikSection::FRONT, deltaTime);
-			performSecondRotation = rubiksCube.isRotationInProgress();
-			performThirdRotation = !performSecondRotation;
-		}
-
-		if (performThirdRotation)
-		{
-			rubiksCube.rotateCubesSmoothZ(RubrikSection::MIDDLE, deltaTime);
-			performThirdRotation = rubiksCube.isRotationInProgress();
-		}*/
 
 		std::vector<Cube> rCubes = rubiksCube.getCubes();
 

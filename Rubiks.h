@@ -42,7 +42,7 @@ private:
 	float rotationTime;
 	bool isScrambling = false;
 	int scrambleAxis = -1;
-	int totalScrambleRotations = 5;
+	int totalScrambleRotations = 15;
 	int currentScrambleRotations = 0;
 	RubrikSection scrambleSection;
 
@@ -58,8 +58,13 @@ private:
 	float clampCoordinate(float coordinate) const;
 	glm::vec3 clampPosition(const glm::vec3& position) const;
 
-	void startScrambleRotation();
-	void performScrambleRotation(float deltaTime);
+	void rotateCubesX(RubrikSection section);
+	void rotateCubesY(RubrikSection section);
+	void rotateCubesZ(RubrikSection section);
+
+	void setupScrambleRotation();
+	void performSmoothScrambleRotation(float deltaTime);
+	void performImmediateScrambleRotation();
 };
 
 

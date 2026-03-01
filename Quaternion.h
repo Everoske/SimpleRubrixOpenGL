@@ -28,6 +28,7 @@ public:
 	static glm::vec3 rotatePoint(const Quaternion& rotator, const glm::vec3& point);
 	static Quaternion slerp(Quaternion q1, Quaternion q2, float t);
 	static glm::vec3 slerpPoint(const glm::vec3& point, const glm::vec3& axis, float radians, float t);
+	static Quaternion quaternionBetweenVectors(glm::vec3 v, glm::vec3 u);
 
 	float w;
 	glm::vec3 v;

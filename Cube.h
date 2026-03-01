@@ -45,6 +45,8 @@ private:
 
 	void rotateVectors(glm::vec3 axis, float radians);
 	void rotateVectors(Quaternion newOrientation);
+	float clampNormalScalar(float scalar);
+	void recalculateOrientation();
 };
 
 #endif

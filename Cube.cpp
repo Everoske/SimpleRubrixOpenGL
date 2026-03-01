@@ -48,6 +48,7 @@ void Cube::rotateSmoothX(float radians, float timePercent)
 	}
 
 	glm::vec3 rightVector = glm::cross(up, forward);
+	rightVector = glm::vec3(clampNormalScalar(rightVector.x), clampNormalScalar(rightVector.y), clampNormalScalar(rightVector.z));
 	Quaternion targetRotator = Quaternion::getRotationQuaternion(rightVector, radians);
 	Quaternion targetOrientation = targetRotator * lastFixedOrientation;
 
@@ -57,6 +58,7 @@ void Cube::rotateSmoothX(float radians, float timePercent)
 		glm::vec3 newPosition = Quaternion::rotatePoint(glm::vec3(1.0f, 0.0f, 0.0f), lastFixedPosition, radians);
 		setCurrentPosition(newPosition);
 		isRotating = false;
+		return;
 	}
 	
 	orientation = Quaternion::slerp(lastFixedOrientation, targetOrientation, timePercent);
@@ -82,6 +84,7 @@ void Cube::rotateSmoothY(float radians, float timePercent)
 		glm::vec3 newPosition = Quaternion::rotatePoint(glm::vec3(0.0f, -1.0f, 0.0f), lastFixedPosition, radians);
 		setCurrentPosition(newPosition);
 		isRotating = false;
+		return;
 	}
 
 	orientation = Quaternion::slerp(lastFixedOrientation, targetOrientation, timePercent);
@@ -107,6 +110,7 @@ void Cube::rotateSmoothZ(float radians, float timePercent)
 		glm::vec3 newPosition = Quaternion::rotatePoint(glm::vec3(0.0f, 0.0f, 1.0f), lastFixedPosition, radians);
 		setCurrentPosition(newPosition);
 		isRotating = false;
+		return;
 	}
 
 	orientation = Quaternion::slerp(lastFixedOrientation, targetOrientation, timePercent);
@@ -128,6 +132,7 @@ void Cube::setCurrentPosition(const glm::vec3& position)
 void Cube::setOrientation(const Quaternion& newOrientation)
 {
 	orientation = newOrientation;
+	//std::cout << orientation.v.x << ", " << orientation.v.y << ", " << orientation.v.z << std::endl;
 	rotateVectors(orientation);
 }
 
@@ -154,14 +159,65 @@ glm::mat4x4 Cube::getTransformationMatrix() const
 	return model;
 }
 
+// Try to clamp vectors???
 void Cube::rotateVectors(glm::vec3 axis, float radians)
 {
 	up = glm::normalize(Quaternion::rotatePoint(axis, up, radians));
 	forward = glm::normalize(Quaternion::rotatePoint(axis, forward, radians));
 }
 
+// Try to clamp vectors??
 void Cube::rotateVectors(Quaternion newOrientation)
 {
 	up = glm::normalize(Quaternion::rotatePoint(newOrientation, glm::vec3(0.0f, 1.0f, 0.0f)));
 	forward = glm::normalize(Quaternion::rotatePoint(newOrientation, glm::vec3(0.0f, 0.0f, -1.0f)));
+	up = glm::vec3(clampNormalScalar(up.x), clampNormalScalar(up.y), clampNormalScalar(up.z));
+	forward = glm::vec3(clampNormalScalar(forward.x), clampNormalScalar(forward.y), clampNormalScalar(forward.z));
+	recalculateOrientation();
+}
+
+float Cube::clampNormalScalar(float scalar)
+{
+	if (scalar > 0.5f)
+		return 1.0f;
+	if (scalar < -0.5f)
+		return -1.0f;
+	
+	return 0.0f;
+}
+
+void Cube::recalculateOrientation()
+{
+	if (up.y == 1.0f && forward.z == -1.0f)
+	{
+		//std::cout << "In Original Position" << std::endl;
+		orientation = Quaternion();
+	}
+	else if (up.y == 1.0f)
+	{
+		//std::cout << "Up in original Position" << std::endl;
+		float yAngle = 0.0f;
+		if (forward.z == 1.0f)
+			yAngle = glm::radians(180.0f);
+		else if (forward.x == 1.0f)
+			yAngle = glm::radians(-90.0f);
+		else if (forward.x == -1.0f)
+			yAngle = glm::radians(90.0f);
+		Quaternion rotator = Quaternion::getRotationQuaternion(up, yAngle);
+		orientation = rotator * Quaternion();
+
+	}
+	else if (forward.z == -1.0f)
+	{
+		//std::cout << "Forward in original Position" << std::endl;
+		float zAngle = 0.0f;
+		if (up.y == -1.0f)
+			zAngle = glm::radians(180.0f);
+		else if (up.x == 1.0f)
+			zAngle = glm::radians(90.0f);
+		else if (up.x == -1.0f)
+			zAngle = glm::radians(-90.0f);
+		Quaternion rotator = Quaternion::getRotationQuaternion(forward, zAngle);
+		orientation = rotator * Quaternion();
+	}
 }

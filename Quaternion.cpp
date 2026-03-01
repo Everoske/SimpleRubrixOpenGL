@@ -98,3 +98,13 @@ glm::vec3 Quaternion::slerpPoint(const glm::vec3& point, const glm::vec3& axis, 
 	Quaternion rotatedPoint = (rotator * point) * rotator.conjugate();
 	return rotatedPoint.v;
 }
+
+Quaternion Quaternion::quaternionBetweenVectors(glm::vec3 v, glm::vec3 u)
+{
+	v = glm::normalize(v);
+	u = glm::normalize(u);
+	glm::vec3 axis = glm::normalize(glm::cross(v, u));
+	float dotProduct = glm::dot(v, u);
+	float angle = glm::acos(dotProduct);
+	return getRotationQuaternion(axis, angle);
+}

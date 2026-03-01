@@ -298,9 +298,9 @@ float Rubiks::clampCoordinate(float coordinate) const
 // TODO: Move this into the Cube class?
 glm::vec3 Rubiks::clampPosition(const glm::vec3& position) const
 {
-	std::cout << position.x << ", " << position.y << ", " << position.z << std::endl;
+	//std::cout << position.x << ", " << position.y << ", " << position.z << std::endl;
 	glm::vec3 newPos = glm::vec3(clampCoordinate(position.x), clampCoordinate(position.y), clampCoordinate(position.z));
-	std::cout << newPos.x << ", " << newPos.y << ", " << newPos.z << std::endl;
+	//std::cout << newPos.x << ", " << newPos.y << ", " << newPos.z << std::endl;
 	return newPos;
 }
 

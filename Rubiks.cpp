@@ -153,15 +153,26 @@ void Rubiks::scrambleImmediate()
 		onScrambleComplete();
 }
 
+bool Rubiks::isRubikCubeSolved()
+{
+	for (Cube cube : cubes)
+	{
+		if (!cube.isInSolvedPositionAndOrientation())
+			return false;
+	}
+
+	return true;
+}
+
 void Rubiks::createCubes()
 {
-	const glm::vec3 Green = glm::vec3(0.0f, 1.0f, 0.0f);
-	const glm::vec3 Red = glm::vec3(1.0f, 0.0f, 0.0f);
-	const glm::vec3 Orange = glm::vec3(1.0f, 0.5f, 0.0f);
-	const glm::vec3 Yellow = glm::vec3(1.0f, 1.0f, 0.0f);
-	const glm::vec3 White = glm::vec3(1.0f);
-	const glm::vec3 Blue = glm::vec3(0.0f, 0.0f, 1.0f);
-	const glm::vec3 Black = glm::vec3(0.05f, 0.05f, 0.05f);
+const glm::vec3 Green = glm::vec3(0.0f, 0.8f, 0.0f);
+const glm::vec3 Red = glm::vec3(0.8f, 0.0f, 0.0f);
+const glm::vec3 Orange = glm::vec3(0.8f, 0.4f, 0.0f);
+const glm::vec3 Yellow = glm::vec3(0.8f, 0.8f, 0.0f);
+const glm::vec3 White = glm::vec3(0.8f);
+const glm::vec3 Blue = glm::vec3(0.0f, 0.0f, 0.8f);
+const glm::vec3 Black = glm::vec3(0.05f, 0.05f, 0.05f);
 
 	glm::vec3 cubePositions[27] =
 	{

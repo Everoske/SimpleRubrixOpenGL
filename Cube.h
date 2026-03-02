@@ -29,13 +29,18 @@ public:
 	void setStartPosition(const glm::vec3& position);
 	void setCurrentPosition(const glm::vec3& position);
 	void setOrientation(const Quaternion& newOrientation);
+	void setHighlight(bool highlightCube);
 	glm::vec3 getStartingPosition() const;
 	glm::vec3 getCurrentPosition() const;
 	Quaternion getOrientation() const;
 	glm::mat4x4 getTransformationMatrix() const;
 
+	bool isInSolvedPositionAndOrientation();
+
 private:
 	glm::vec3 faceColors[6];
+	bool highlight;
+
 	glm::vec3 startingPosition;
 	glm::vec3 currentPosition;
 	glm::vec3 lastFixedPosition;

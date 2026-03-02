@@ -22,6 +22,7 @@ Cube::Cube(glm::vec3 frontFace,
 	faceColors[3] = topFace;
 	faceColors[4] = bottomFace;
 	faceColors[5] = backFace;
+	highlight = false;
 
 	isRotating = false;
 	lastFixedOrientation = orientation;
@@ -36,6 +37,7 @@ void Cube::bindFaceColors(const unsigned int shaderID)
 	glUniform3fv(glGetUniformLocation(shaderID, "topColor"), 1, &faceColors[3][0]);
 	glUniform3fv(glGetUniformLocation(shaderID, "bottomColor"), 1, &faceColors[4][0]);
 	glUniform3fv(glGetUniformLocation(shaderID, "backColor"), 1, &faceColors[5][0]);
+	glUniform1i(glGetUniformLocation(shaderID, "highlight"), highlight);
 }
 
 void Cube::rotateSmoothX(float radians, float timePercent)
@@ -195,6 +197,11 @@ void Cube::setOrientation(const Quaternion& newOrientation)
 	rotateVectors(orientation);
 }
 
+void Cube::setHighlight(bool highlightCube)
+{
+	highlight = highlightCube;
+}
+
 glm::vec3 Cube::getStartingPosition() const
 {
 	return startingPosition;
@@ -216,6 +223,11 @@ glm::mat4x4 Cube::getTransformationMatrix() const
 	model = glm::translate(model, currentPosition) * orientation.toRotationMatrix();
 	model = glm::scale(model, scale);
 	return model;
+}
+
+bool Cube::isInSolvedPositionAndOrientation()
+{
+	return currentPosition == startingPosition && up.y == 1.0f && forward.z == -1.0f;
 }
 
 // Try to clamp vectors???

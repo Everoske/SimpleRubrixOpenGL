@@ -25,6 +25,7 @@ public:
 
 	void scrambleSmooth(float deltaTime);
 	void scrambleImmediate();
+	bool isRubikCubeSolved();
 
 	std::vector<Cube> getCubes() { return cubes; }
 	bool isRotationInProgress() const { return isRotating; }

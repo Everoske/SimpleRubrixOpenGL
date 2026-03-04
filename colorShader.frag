@@ -12,14 +12,15 @@ uniform int highlight;
 
 void main()
 {
+	float intensity = 1.5;
 	// Front
 	if (gl_PrimitiveID < 2)
 	{
 		if (highlight > 0)
 		{
-			vec3 hFrontColor = vec3(min(frontColor.x * 1.2, 1.0),
-			                        min(frontColor.y * 1.2, 1.0),
-			                        min(frontColor.z * 1.2, 1.0)
+			vec3 hFrontColor = vec3(min(frontColor.x * intensity, 1.0),
+			                        min(frontColor.y * intensity, 1.0),
+			                        min(frontColor.z * intensity, 1.0)
 									);
 			FragColor = vec4(hFrontColor, 1.0);
 		}
@@ -33,9 +34,9 @@ void main()
 	{
 		if (highlight > 0)
 		{
-			vec3 hRightColor = vec3(min(rightColor.x * 1.2, 1.0),
-			                        min(rightColor.y * 1.2, 1.0),
-			                        min(rightColor.z * 1.2, 1.0)
+			vec3 hRightColor = vec3(min(rightColor.x * intensity, 1.0),
+			                        min(rightColor.y * intensity, 1.0),
+			                        min(rightColor.z * intensity, 1.0)
 									);
 			FragColor = vec4(hRightColor, 1.0);
 		}
@@ -49,9 +50,9 @@ void main()
 	{
 		if (highlight > 0)
 		{
-			vec3 hLeftColor = vec3(min(leftColor.x * 1.2, 1.0),
-			                        min(leftColor.y * 1.2, 1.0),
-			                        min(leftColor.z * 1.2, 1.0)
+			vec3 hLeftColor = vec3(min(leftColor.x * intensity, 1.0),
+			                        min(leftColor.y * intensity, 1.0),
+			                        min(leftColor.z * intensity, 1.0)
 									);
 			FragColor = vec4(hLeftColor, 1.0);
 		}
@@ -65,9 +66,9 @@ void main()
 	{
 		if (highlight > 0)
 		{
-			vec3 hTopColor = vec3(min(topColor.x * 1.2, 1.0),
-			                        min(topColor.y * 1.2, 1.0),
-			                        min(topColor.z * 1.2, 1.0)
+			vec3 hTopColor = vec3(min(topColor.x * intensity, 1.0),
+			                        min(topColor.y * intensity, 1.0),
+			                        min(topColor.z * intensity, 1.0)
 									);
 			FragColor = vec4(hTopColor, 1.0);
 		}
@@ -81,9 +82,9 @@ void main()
 	{
 		if (highlight > 0)
 		{
-			vec3 hBottomColor = vec3(min(bottomColor.x * 1.2, 1.0),
-			                        min(bottomColor.y * 1.2, 1.0),
-			                        min(bottomColor.z * 1.2, 1.0)
+			vec3 hBottomColor = vec3(min(bottomColor.x * intensity, 1.0),
+			                        min(bottomColor.y * intensity, 1.0),
+			                        min(bottomColor.z * intensity, 1.0)
 									);
 			FragColor = vec4(hBottomColor, 1.0);
 		}
@@ -97,9 +98,9 @@ void main()
 	{
 		if (highlight > 0)
 		{
-			vec3 hBackColor = vec3(min(backColor.x * 1.2, 1.0),
-			                        min(backColor.y * 1.2, 1.0),
-			                        min(backColor.z * 1.2, 1.0)
+			vec3 hBackColor = vec3(min(backColor.x * intensity, 1.0),
+			                        min(backColor.y * intensity, 1.0),
+			                        min(backColor.z * intensity, 1.0)
 									);
 			FragColor = vec4(hBackColor, 1.0);
 		}

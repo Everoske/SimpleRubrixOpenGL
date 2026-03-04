@@ -25,18 +25,33 @@ bool mouseInitialized = false;
 
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
+float inputTimeout = 0.2f;
+float rotateCounter, axisCounter, sectionCounter, clockwiseCounter = 0.0f;
+bool canRotate, canChangeAxis, canChangeSection, canChangeClockwise = true;
+bool highlightCubesThisFrame = true;
 
 void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 unsigned int createShaderProgram(const char* vertexPath, const char* fragmentPath);
 void loadShaderCode(const char* shaderPath, std::string& code);
 void mouseCallback(GLFWwindow* window, double xPosInput, double yPosInput);
 void processDeltaTime();
+void processTimeouts();
+
 void processInput(GLFWwindow* window);
+void processPlayerRotate();
+void processPlayerChangeAxis();
+void processPlayerChangeSection(int direction);
+void processPlayerSwitchClockwise();
+
 void onRotationCompleted();
 void onScrambleCompleted();
 
 // Temp Game Settings
+int selectedAxis = 1;
+RubrikSection selectedSection = RubrikSection::MIDDLE;
+bool counterClockwise = false;
 bool isScrambling = false;
+bool playerRotationActive = false;
 
 int main()
 {
@@ -134,12 +149,14 @@ int main()
 	Rubiks rubiksCube = Rubiks(0.6f, 0.15f, 1.0f);
 
 	rubiksCube.setOnScrambleComplete(onScrambleCompleted);
+	rubiksCube.setRotationCompleteCallback(onRotationCompleted);
 	isScrambling = true;
 
 	while (!glfwWindowShouldClose(window))
 	{
 		processDeltaTime();
 		processInput(window);
+		processTimeouts();
 
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -159,6 +176,17 @@ int main()
 		{
 			rubiksCube.scrambleSmooth(deltaTime);
 			//rubiksCube.scrambleImmediate();
+		}
+
+		if (!isScrambling && highlightCubesThisFrame)
+		{
+			rubiksCube.highlightSelectedCubes(selectedAxis, selectedSection);
+			highlightCubesThisFrame = false;
+		}
+
+		if (playerRotationActive)
+		{
+			rubiksCube.rotateCubesSmooth(selectedAxis, selectedSection, deltaTime, counterClockwise);
 		}
 
 		std::vector<Cube> rCubes = rubiksCube.getCubes();
@@ -293,16 +321,107 @@ void processDeltaTime()
 	lastFrame = currentFrame;
 }
 
+void processTimeouts()
+{
+	if (!canRotate)
+	{
+		rotateCounter += deltaTime;
+		if (rotateCounter > inputTimeout)
+		{
+			rotateCounter = 0.0f;
+			canRotate = true;
+		}
+	}
+
+	if (!canChangeAxis)
+	{
+		axisCounter += deltaTime;
+		if (axisCounter > inputTimeout)
+		{
+			axisCounter = 0.0f;
+			canChangeAxis = true;
+		}
+	}
+
+	if (!canChangeSection)
+	{
+		sectionCounter += deltaTime;
+		if (sectionCounter > inputTimeout)
+		{
+			sectionCounter = 0.0f;
+			canChangeSection = true;
+		}
+	}
+
+	if (!canChangeClockwise)
+	{
+		clockwiseCounter += deltaTime;
+		if (clockwiseCounter > inputTimeout)
+		{
+			clockwiseCounter = 0.0f;
+			canChangeClockwise = true;
+		}
+	}
+}
+
 void processInput(GLFWwindow* window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
+	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+		processPlayerRotate();
+	if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
+		processPlayerChangeAxis();
+	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+		processPlayerChangeSection(1);
+	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+		processPlayerChangeSection(3);
+	if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
+		processPlayerSwitchClockwise();
+}
+
+// TODO: Start Rubik's Rotation Only When Allowable
+void processPlayerRotate()
+{
+	if (isScrambling || playerRotationActive || !canRotate)
+		return;
+	playerRotationActive = true;
+	canRotate = false;
+}
+
+void processPlayerChangeAxis()
+{
+	if (isScrambling || playerRotationActive || !canChangeAxis)
+		return;
+	selectedAxis = ((selectedAxis + 3) % 3) + 1;
+	canChangeAxis = false;
+	highlightCubesThisFrame = true;
+}
+
+void processPlayerChangeSection(int direction)
+{
+	if (isScrambling || playerRotationActive || !canChangeSection)
+		return;
+
+	int sectionInt = (((int)selectedSection + direction) % 3) + 1;
+	selectedSection = static_cast<RubrikSection>(sectionInt);
+	canChangeSection = false;
+	highlightCubesThisFrame = true;
+}
+
+void processPlayerSwitchClockwise()
+{
+	if (isScrambling || playerRotationActive || !canChangeClockwise)
+		return;
+	counterClockwise = !counterClockwise;
+	canChangeClockwise = false;
 }
 
 
 void onRotationCompleted()
 {
-	
+	playerRotationActive = false;
+	canRotate = true;
 }
 
 void onScrambleCompleted()

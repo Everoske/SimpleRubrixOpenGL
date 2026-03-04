@@ -8,7 +8,37 @@ Rubiks::Rubiks(float cubeDisplacement, float floatMargin, float rotationTime) :
 {
 	createCubes();
 	rotatingIndices = std::vector<int>();
+	selectedIndices = std::vector<int>();
 	isRotating = false;
+}
+
+void Rubiks::highlightSelectedCubes(int axis, RubrikSection section)
+{
+	// Clear Current Selection
+	for (int it : selectedIndices)
+		cubes.at(it).setHighlight(false);
+
+	findSelectedIndices(axis, section);
+
+	// Highlight New Selection
+	for (int it : selectedIndices)
+		cubes.at(it).setHighlight(true);
+}
+
+void Rubiks::rotateCubesSmooth(int axis, RubrikSection section, float deltaTime, bool counterClockwise)
+{
+	switch (axis)
+	{
+	case 1:
+		rotateCubesSmoothX(section, deltaTime, counterClockwise);
+		break;
+	case 2:
+		rotateCubesSmoothY(section, deltaTime, counterClockwise);
+		break;
+	case 3:
+		rotateCubesSmoothZ(section, deltaTime, counterClockwise);
+		break;
+	}
 }
 
 void Rubiks::rotateCubesSmoothX(RubrikSection section, float deltaTime, bool counterClockwise)
@@ -166,12 +196,12 @@ bool Rubiks::isRubikCubeSolved()
 
 void Rubiks::createCubes()
 {
-const glm::vec3 Green = glm::vec3(0.0f, 0.8f, 0.0f);
-const glm::vec3 Red = glm::vec3(0.8f, 0.0f, 0.0f);
-const glm::vec3 Orange = glm::vec3(0.8f, 0.4f, 0.0f);
-const glm::vec3 Yellow = glm::vec3(0.8f, 0.8f, 0.0f);
-const glm::vec3 White = glm::vec3(0.8f);
-const glm::vec3 Blue = glm::vec3(0.0f, 0.0f, 0.8f);
+const glm::vec3 Green = glm::vec3(0.0f, 0.6f, 0.0f);
+const glm::vec3 Red = glm::vec3(0.6f, 0.0f, 0.0f);
+const glm::vec3 Orange = glm::vec3(0.6f, 0.3f, 0.0f);
+const glm::vec3 Yellow = glm::vec3(0.6f, 0.6f, 0.0f);
+const glm::vec3 White = glm::vec3(0.6f);
+const glm::vec3 Blue = glm::vec3(0.0f, 0.0f, 0.6f);
 const glm::vec3 Black = glm::vec3(0.05f, 0.05f, 0.05f);
 
 	glm::vec3 cubePositions[27] =
@@ -289,6 +319,57 @@ void Rubiks::findRotatingIndicesZ(float zPosition)
 		if (cubes.at(i).getCurrentPosition().z == zPosition)
 		{
 			rotatingIndices.push_back(i);
+		}
+	}
+}
+
+void Rubiks::findSelectedIndices(int axis, RubrikSection section)
+{
+	selectedIndices = std::vector<int>();
+	float position = getSectionCoordinate(section);
+	switch (axis)
+	{
+	case 1:
+		findSelectedIndicesX(position);
+		break;
+	case 2:
+		findSelectedIndicesY(position);
+		break;
+	case 3:
+		findSelectedIndicesZ(position);
+		break;
+	}
+}
+
+void Rubiks::findSelectedIndicesX(float xPosition)
+{
+	for (int i = 0; i < 27; i++)
+	{
+		if (cubes.at(i).getCurrentPosition().x == xPosition)
+		{
+			selectedIndices.push_back(i);
+		}
+	}
+}
+
+void Rubiks::findSelectedIndicesY(float yPosition)
+{
+	for (int i = 0; i < 27; i++)
+	{
+		if (cubes.at(i).getCurrentPosition().y == yPosition)
+		{
+			selectedIndices.push_back(i);
+		}
+	}
+}
+
+void Rubiks::findSelectedIndicesZ(float zPosition)
+{
+	for (int i = 0; i < 27; i++)
+	{
+		if (cubes.at(i).getCurrentPosition().z == zPosition)
+		{
+			selectedIndices.push_back(i);
 		}
 	}
 }
@@ -424,18 +505,7 @@ void Rubiks::setupScrambleRotation()
 
 void Rubiks::performSmoothScrambleRotation(float deltaTime)
 {
-	switch (scrambleAxis)
-	{
-	case 1:
-		rotateCubesSmoothX(scrambleSection, deltaTime);
-		break;
-	case 2:
-		rotateCubesSmoothY(scrambleSection, deltaTime);
-		break;
-	case 3:
-		rotateCubesSmoothZ(scrambleSection, deltaTime);
-		break;
-	}
+	rotateCubesSmooth(scrambleAxis, scrambleSection, deltaTime);
 }
 
 void Rubiks::performImmediateScrambleRotation()

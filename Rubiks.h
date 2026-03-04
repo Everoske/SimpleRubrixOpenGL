@@ -19,6 +19,8 @@ class Rubiks
 public:
 	Rubiks(float cubeDisplacement, float floatMargin, float targetTime);
 	
+	void highlightSelectedCubes(int axis, RubrikSection section);
+	void rotateCubesSmooth(int axis, RubrikSection section, float deltaTime, bool counterClockwise = false);
 	void rotateCubesSmoothX(RubrikSection section, float deltaTime, bool counterClockwise = false);
 	void rotateCubesSmoothY(RubrikSection section, float deltaTime, bool counterClockwise = false);
 	void rotateCubesSmoothZ(RubrikSection section, float deltaTime, bool counterClockwise = false);
@@ -35,6 +37,7 @@ public:
 private:
 	std::vector<Cube> cubes;
 	std::vector<int> rotatingIndices;
+	std::vector<int> selectedIndices;
 	float displacement;
 	float errorMargin;
 
@@ -55,6 +58,12 @@ private:
 	void findRotatingIndicesX(float xPosition);
 	void findRotatingIndicesY(float yPosition);
 	void findRotatingIndicesZ(float zPosition);
+
+	void findSelectedIndices(int axis, RubrikSection section);
+	void findSelectedIndicesX(float xPosition);
+	void findSelectedIndicesY(float yPosition);
+	void findSelectedIndicesZ(float zPosition);
+
 	void clampRotatingCubes();
 	float clampCoordinate(float coordinate) const;
 	glm::vec3 clampPosition(const glm::vec3& position) const;

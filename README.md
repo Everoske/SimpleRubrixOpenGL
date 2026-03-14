@@ -7,6 +7,7 @@ This is meant to be a simple Rubik's Cube game built using OpenGL and GLFW. The 
 
 ## Current Functionality
 - Cubes created and textured to match a Rubik's Cube.
+- Orbit camera rotation.
 - Rotation of the Rubik's Cube's sections implemented.
 - Method for scrambling the Rubik's Cube implemented.
 - Ability for player to select cube sections, change axes, and rotate sections clockwise and counterclockwise implemented.

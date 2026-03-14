@@ -469,6 +469,7 @@ void Rubiks::rotateCubesZ(RubrikSection section)
 
 void Rubiks::setupScrambleRotation()
 {
+	// TODO: Try Using PCG32
 	srand(time(0));
 	int newAxis = (rand() % 3) + 1;
 	int newSection = (rand() % 3) + 1;

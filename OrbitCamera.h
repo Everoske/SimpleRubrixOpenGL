@@ -11,43 +11,45 @@ class OrbitCamera
 {
 public:
 
-	OrbitCamera(float oDist = 5.0f) : targetPosition(glm::vec3(0.0f, 0.0f, 0.0f)), worldUp(glm::vec3(0.0f, 1.0f, 0.0f)), pitch(0.0f), yaw(0.0f)
+	OrbitCamera(float oDist = 5.0f) : mTargetPosition(glm::vec3(0.0f, 0.0f, 0.0f)), mWorldUp(glm::vec3(0.0f, 1.0f, 0.0f)), mPitch(0.0f), mYaw(0.0f)
 	{
-		orbitDist = oDist;
+		mOrbitDist = oDist;
 		calculatePosition();
 	}
 
 	glm::mat4 getViewMatrix()
 	{
-		return glm::lookAt(position, targetPosition, worldUp);
+		return glm::lookAt(mPosition, mTargetPosition, mWorldUp);
 	}
+
+	float getYaw() { return mYaw; }
 
 	void processRotationInput(float yawInput, float pitchInput)
 	{
-		yaw += yawInput;
-		pitch += pitchInput;
-		pitch = glm::clamp(pitch, -89.9f, 89.9f);
+		mYaw += yawInput;
+		mPitch += pitchInput;
+		mPitch = glm::clamp(mPitch, -89.9f, 89.9f);
 		calculatePosition();
 	}
 
 private:
-	float orbitDist;
-	float pitch;
-	float yaw;
-	glm::vec3 position;
-	glm::vec3 targetPosition;
-	glm::vec3 worldUp;
+	float mOrbitDist;
+	float mPitch;
+	float mYaw;
+	glm::vec3 mPosition;
+	glm::vec3 mTargetPosition;
+	glm::vec3 mWorldUp;
 	
 	void calculatePosition()
 	{
 		// Rotate pitch vector (0, 0, orbitDist) about x-axis by current pitch converted to radians
-		glm::vec3 pitchPos = glm::vec3(0, -glm::sin(glm::radians(pitch)) * orbitDist, glm::cos(glm::radians(pitch)) * orbitDist);
+		glm::vec3 pitchPos = glm::vec3(0, -glm::sin(glm::radians(mPitch)) * mOrbitDist, glm::cos(glm::radians(mPitch)) * mOrbitDist);
 		
 		// Rotate yaw vector (0, 0, pitchPos.y) about y-axis by current yaw converted to radians
-		glm::vec3 yawPos = glm::vec3(glm::sin(glm::radians(yaw)) * pitchPos.z, 0, glm::cos(glm::radians(yaw)) * pitchPos.z);
+		glm::vec3 yawPos = glm::vec3(glm::sin(glm::radians(mYaw)) * pitchPos.z, 0, glm::cos(glm::radians(mYaw)) * pitchPos.z);
 
 		// Get x and y from yaw and y from pitch
-		position = glm::vec3(yawPos.x, pitchPos.y, yawPos.z);
+		mPosition = glm::vec3(yawPos.x, pitchPos.y, yawPos.z);
 	}
 };
 

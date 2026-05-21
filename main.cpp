@@ -22,6 +22,7 @@ float lastX;
 float lastY;
 float cameraSpeed = 5.0f;
 bool mouseInitialized = false;
+bool middleClicked = false;
 
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
@@ -73,8 +74,6 @@ int main()
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
 	glfwSetCursorPosCallback(window, mouseCallback);
-
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
@@ -146,7 +145,7 @@ int main()
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
-	Rubiks rubiksCube = Rubiks(0.6f, 0.15f, 2.0f);
+	Rubiks rubiksCube = Rubiks(0.6f, 0.15f, 0.5f);
 
 	rubiksCube.setOnScrambleComplete(onScrambleCompleted);
 	rubiksCube.setRotationCompleteCallback(onRotationCompleted);
@@ -311,7 +310,9 @@ void mouseCallback(GLFWwindow* window, double xPosInput, double yPosInput)
 	lastX = xPos;
 	lastY = yPos;
 
-	camera.processRotationInput(xOffset, yOffset);
+	// Only rotate camera is middle mouse clicked
+	if (middleClicked)
+		camera.processRotationInput(xOffset, yOffset);
 }
 
 void processDeltaTime()
@@ -378,6 +379,18 @@ void processInput(GLFWwindow* window)
 		processPlayerChangeSection(3);
 	if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
 		processPlayerSwitchClockwise();
+
+	// Can probably do this better :/
+	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_PRESS)
+	{
+		middleClicked = true;
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	}
+	else
+	{
+		middleClicked = false;
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	}
 }
 
 // TODO: Start Rubik's Rotation Only When Allowable

@@ -19,6 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AABBCollider.cpp" />
+    <ClCompile Include="CollisionSystem.cpp" />
     <ClCompile Include="Cube.cpp" />
     <ClCompile Include="Quaternion.cpp" />
     <ClCompile Include="glad.c" />
@@ -30,9 +32,12 @@
     <None Include="colorShader.vert" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AABBCollider.h" />
+    <ClInclude Include="CollisionSystem.h" />
     <ClInclude Include="Cube.h" />
     <ClInclude Include="OrbitCamera.h" />
     <ClInclude Include="Quaternion.h" />
+    <ClInclude Include="Ray.h" />
     <ClInclude Include="Rubiks.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

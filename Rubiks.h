@@ -46,7 +46,7 @@ private:
 	float rotationTime;
 	bool isScrambling = false;
 	int scrambleAxis = -1;
-	int totalScrambleRotations = 15;
+	int totalScrambleRotations = 5;
 	int currentScrambleRotations = 0;
 	RubrikSection scrambleSection;
 

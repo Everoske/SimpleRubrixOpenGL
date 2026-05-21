@@ -7,6 +7,9 @@
 
 class Cube
 {
+private:
+	static int mNextValidID;
+
 public:
 	Cube(glm::vec3 frontFace = glm::vec3(0.05f, 0.05f, 0.05f),
 		glm::vec3 rightFace = glm::vec3(0.05f, 0.05f, 0.05f),
@@ -26,6 +29,7 @@ public:
 	void rotateYImmediate(float radians);
 	void rotateZImmediate(float radians);
 
+	void setID(int id);
 	void setStartPosition(const glm::vec3& position);
 	void setCurrentPosition(const glm::vec3& position);
 	void setOrientation(const Quaternion& newOrientation);
@@ -38,19 +42,22 @@ public:
 	bool isInSolvedPositionAndOrientation();
 
 private:
-	glm::vec3 faceColors[6];
-	bool highlight;
+	int mID;
+	glm::vec3 mFaceColors[6];
+	bool mHighlight;
 
-	glm::vec3 startingPosition;
-	glm::vec3 currentPosition;
-	glm::vec3 lastFixedPosition;
-	Quaternion orientation;
-	Quaternion lastFixedOrientation;
-	glm::vec3 scale;
-	glm::vec3 up;
-	glm::vec3 forward;
+	glm::vec3 mStartingPosition;
+	glm::vec3 mCurrentPosition;
+	glm::vec3 mLastFixedPosition;
+	Quaternion mOrientation;
+	Quaternion mLastFixedOrientation;
+	glm::vec3 mScale;
+	glm::vec3 mUp;
+	glm::vec3 mForward;
 
-	bool isRotating;
+	bool mbIsRotating = false;
+
+
 
 	void rotateVectors(glm::vec3 axis, float radians);
 	void rotateVectors(Quaternion newOrientation);

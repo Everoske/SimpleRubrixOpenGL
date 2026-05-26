@@ -24,7 +24,7 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Rubiks.cpp">
+    <ClCompile Include="RubiksCube.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Cube.cpp">
@@ -58,7 +58,7 @@
     <ClInclude Include="Quaternion.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Rubiks.h">
+    <ClInclude Include="RubiksCube.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AABBCollider.h">

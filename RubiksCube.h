@@ -1,8 +1,10 @@
-#ifndef RUBIKS_H
-#define RUBIKS_H
+#ifndef RUBIKS_CUBE_H
+#define RUBIKS_CUBE_H
 
-#include "Cube.h"
+#include <map>
 #include <vector>
+#include <memory>
+#include "Cube.h"
 
 enum RubrikSection
 {
@@ -14,10 +16,17 @@ enum RubrikSection
 typedef void (*PFnOnRotationComplete)();
 typedef void (*PFnOnScrambleComplete)();
 
-class Rubiks
+class RubiksCube
 {
+private:
+	typedef std::map<int, std::shared_ptr<Cube>> CubeMap;
+
 public:
-	Rubiks(float cubeDisplacement, float floatMargin, float targetTime);
+	RubiksCube(float cubeDisplacement, float floatMargin, float targetTime);
+	~RubiksCube() { mCubeMap.clear(); }
+
+	void renderCubes(const unsigned int& cubeVAO, const unsigned int& shaderID) const;
+	void update(float deltaTime);
 	
 	void highlightSelectedCubes(int axis, RubrikSection section);
 	void rotateCubesSmooth(int axis, RubrikSection section, float deltaTime, bool counterClockwise = false);
@@ -29,40 +38,44 @@ public:
 	void scrambleImmediate();
 	bool isRubikCubeSolved();
 
-	std::vector<Cube> getCubes() { return cubes; }
-	bool isRotationInProgress() const { return isRotating; }
+	bool isRotationInProgress() const { return mbIsRotating; }
 	void setRotationCompleteCallback(PFnOnRotationComplete onComplete) { onRotationComplete = onComplete; }
 	void setOnScrambleComplete(PFnOnScrambleComplete onComplete) { onScrambleComplete = onComplete; }
 
 private:
-	std::vector<Cube> cubes;
+	CubeMap mCubeMap;
 	std::vector<int> rotatingIndices;
 	std::vector<int> selectedIndices;
-	float displacement;
-	float errorMargin;
+	float mDisplacement;
+	float mErrorMargin;
 
-	bool isRotating;
-	float currentTime;
-	float rotationTime;
-	bool isScrambling = false;
-	int scrambleAxis = -1;
-	int totalScrambleRotations = 5;
-	int currentScrambleRotations = 0;
-	RubrikSection scrambleSection;
+	bool mbIsRotating;
+	float mCurrentRotateTime;
+	float mRotateCompletionTime;
+	bool mbIsScrambling = false;
+	int mScrambleAxis = -1;
+	int mTotalScrambleRotations = 5;
+	int mCurrentScrambleRotations = 0;
+	RubrikSection mScrambleSection;
 
 	PFnOnRotationComplete onRotationComplete;
 	PFnOnScrambleComplete onScrambleComplete;
 
-	void createCubes();
-	float getSectionCoordinate(RubrikSection section) const;
-	void findRotatingIndicesX(float xPosition);
-	void findRotatingIndicesY(float yPosition);
-	void findRotatingIndicesZ(float zPosition);
 
-	void findSelectedIndices(int axis, RubrikSection section);
-	void findSelectedIndicesX(float xPosition);
-	void findSelectedIndicesY(float yPosition);
-	void findSelectedIndicesZ(float zPosition);
+	// Cube Selection
+	int mLastSelectedCubeID = -1;
+	int mSelectedCubeID = -1;
+	
+	// Section Selection and Rotation
+	std::vector<int> mSelectedSectionIDs;
+	float mPlayerRotationInput = 0.0f;
+	bool mbPlayerRotating = false;
+	int mSelectedAxis = -1;
+	int mSelectedFaceNormal = -1;
+
+	void createCubes();
+
+	void findSectionCubes();
 
 	void clampRotatingCubes();
 	float clampCoordinate(float coordinate) const;

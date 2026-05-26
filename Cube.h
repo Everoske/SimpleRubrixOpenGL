@@ -11,7 +11,8 @@ private:
 	static int mNextValidID;
 
 public:
-	Cube(glm::vec3 frontFace = glm::vec3(0.05f, 0.05f, 0.05f),
+	Cube(glm::vec3 startPosition, glm::vec3 halfExtents,
+		glm::vec3 frontFace = glm::vec3(0.05f, 0.05f, 0.05f),
 		glm::vec3 rightFace = glm::vec3(0.05f, 0.05f, 0.05f),
 		glm::vec3 leftFace = glm::vec3(0.05f, 0.05f, 0.05f),
 		glm::vec3 topFace = glm::vec3(0.05f, 0.05f, 0.05f),
@@ -34,23 +35,32 @@ public:
 	void setCurrentPosition(const glm::vec3& position);
 	void setOrientation(const Quaternion& newOrientation);
 	void setHighlight(bool highlightCube);
-	glm::vec3 getStartingPosition() const;
-	glm::vec3 getCurrentPosition() const;
-	Quaternion getOrientation() const;
-	glm::mat4x4 getTransformationMatrix() const;
 
+
+	int getID() const { return mID; }
+	glm::vec3 getHalfExtents() const { return mHalfExtents; }
+	glm::vec3 getStartingPosition() const { return mStartingPosition; }
+	glm::vec3 getCurrentPosition() const { return mCurrentPosition; }
+	glm::vec3 getLastFixedPosition() const { return mLastFixedPosition; }
+	Quaternion getOrientation() const { return mOrientation; }
+	glm::mat4x4 getTransformationMatrix() const;
+	
 	bool isInSolvedPositionAndOrientation();
 
 private:
 	int mID;
 	glm::vec3 mFaceColors[6];
-	bool mHighlight;
+	bool mbHighlighted = false;
+
+	glm::vec3 mHalfExtents;
 
 	glm::vec3 mStartingPosition;
 	glm::vec3 mCurrentPosition;
 	glm::vec3 mLastFixedPosition;
+
 	Quaternion mOrientation;
 	Quaternion mLastFixedOrientation;
+
 	glm::vec3 mScale;
 	glm::vec3 mUp;
 	glm::vec3 mForward;
@@ -63,6 +73,8 @@ private:
 	void rotateVectors(Quaternion newOrientation);
 	float clampNormalScalar(float scalar);
 	void recalculateOrientation();
+
+	void updateColliderPosition();
 };
 
 #endif

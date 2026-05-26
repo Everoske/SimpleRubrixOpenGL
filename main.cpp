@@ -11,7 +11,7 @@
 
 #include "OrbitCamera.h"
 #include "Cube.h"
-#include "Rubiks.h"
+#include "RubiksCube.h"
 
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
@@ -145,7 +145,7 @@ int main()
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
-	Rubiks rubiksCube = Rubiks(0.6f, 0.15f, 0.5f);
+	RubiksCube rubiksCube = RubiksCube(0.6f, 0.15f, 0.5f);
 
 	rubiksCube.setOnScrambleComplete(onScrambleCompleted);
 	rubiksCube.setRotationCompleteCallback(onRotationCompleted);
@@ -174,7 +174,6 @@ int main()
 		if (isScrambling)
 		{
 			rubiksCube.scrambleSmooth(deltaTime);
-			//rubiksCube.scrambleImmediate();
 		}
 
 		if (!isScrambling && highlightCubesThisFrame)
@@ -188,17 +187,7 @@ int main()
 			rubiksCube.rotateCubesSmooth(selectedAxis, selectedSection, deltaTime, counterClockwise);
 		}
 
-		std::vector<Cube> rCubes = rubiksCube.getCubes();
-
-		for (unsigned int i = 0; i < 27; i++)
-		{
-			model = glm::mat4(1.0f);
-			glm::mat4x4 rotation = rCubes[i].getOrientation().toRotationMatrix();
-			model = rCubes[i].getTransformationMatrix();
-			glUniformMatrix4fv(glGetUniformLocation(colorShader, "model"), 1, GL_FALSE, &model[0][0]);
-			rCubes[i].bindFaceColors(colorShader);
-			glDrawArrays(GL_TRIANGLES, 0, 36);
-		}
+		rubiksCube.renderCubes(VAO, colorShader);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

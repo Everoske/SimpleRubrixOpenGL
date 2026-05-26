@@ -25,7 +25,7 @@
     <ClCompile Include="Quaternion.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Rubiks.cpp" />
+    <ClCompile Include="RubiksCube.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="colorShader.frag" />
@@ -38,7 +38,7 @@
     <ClInclude Include="OrbitCamera.h" />
     <ClInclude Include="Quaternion.h" />
     <ClInclude Include="Ray.h" />
-    <ClInclude Include="Rubiks.h" />
+    <ClInclude Include="RubiksCube.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

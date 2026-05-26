@@ -1,22 +1,25 @@
 #include "Cube.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
+#include "CollisionSystem.h"
 
 int Cube::mNextValidID = 0;
 
-Cube::Cube(glm::vec3 frontFace,
+Cube::Cube(glm::vec3 startPosition, glm::vec3 halfExtents,	
+	glm::vec3 frontFace,
 	glm::vec3 rightFace,
 	glm::vec3 leftFace,
 	glm::vec3 topFace,
 	glm::vec3 bottomFace,
 	glm::vec3 backFace
 ) :
-	mStartingPosition(glm::vec3(0.0f)),
-	mCurrentPosition(glm::vec3(0.0f)),
-	mOrientation(Quaternion()),
-	mScale(0.5f, 0.5f, 0.5f),
-	mUp(glm::vec3(0.0f, 1.0f, 0.0f)),
-	mForward(glm::vec3(0.0f, 0.0f, -1.0f))
+	mStartingPosition{ startPosition },
+	mHalfExtents{ halfExtents },
+	mCurrentPosition{ startPosition },
+	mOrientation{ Quaternion() },
+	mScale{ halfExtents },
+	mUp{ glm::vec3(0.0f, 1.0f, 0.0f) },
+	mForward{ glm::vec3(0.0f, 0.0f, -1.0f) }
 {
 	setID(mNextValidID);
 	mFaceColors[0] = frontFace;
@@ -25,11 +28,11 @@ Cube::Cube(glm::vec3 frontFace,
 	mFaceColors[3] = topFace;
 	mFaceColors[4] = bottomFace;
 	mFaceColors[5] = backFace;
-	mHighlight = false;
 
-	mbIsRotating = false;
 	mLastFixedOrientation = mOrientation;
 	mLastFixedPosition = mCurrentPosition;
+
+	CollisionSystem::Instance()->generateAABBCollider(mID, mHalfExtents, mCurrentPosition);
 }
 
 void Cube::bindFaceColors(const unsigned int shaderID)
@@ -40,7 +43,7 @@ void Cube::bindFaceColors(const unsigned int shaderID)
 	glUniform3fv(glGetUniformLocation(shaderID, "topColor"), 1, &mFaceColors[3][0]);
 	glUniform3fv(glGetUniformLocation(shaderID, "bottomColor"), 1, &mFaceColors[4][0]);
 	glUniform3fv(glGetUniformLocation(shaderID, "backColor"), 1, &mFaceColors[5][0]);
-	glUniform1i(glGetUniformLocation(shaderID, "highlight"), mHighlight);
+	glUniform1i(glGetUniformLocation(shaderID, "highlight"), mbHighlighted);
 }
 
 void Cube::rotateSmoothX(float radians, float timePercent)
@@ -209,22 +212,7 @@ void Cube::setOrientation(const Quaternion& newOrientation)
 
 void Cube::setHighlight(bool highlightCube)
 {
-	mHighlight = highlightCube;
-}
-
-glm::vec3 Cube::getStartingPosition() const
-{
-	return mStartingPosition;
-}
-
-glm::vec3 Cube::getCurrentPosition() const
-{
-	return mCurrentPosition;
-}
-
-Quaternion Cube::getOrientation() const
-{
-	return mOrientation;
+	mbHighlighted = highlightCube;
 }
 
 glm::mat4x4 Cube::getTransformationMatrix() const
@@ -301,4 +289,9 @@ void Cube::recalculateOrientation()
 		Quaternion rotator = Quaternion::getRotationQuaternion(mForward, zAngle);
 		mOrientation = rotator * Quaternion();
 	}
+}
+
+void Cube::updateColliderPosition()
+{
+	CollisionSystem::Instance()->updateColliderPosition(mID, mCurrentPosition);
 }

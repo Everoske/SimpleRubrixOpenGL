@@ -22,6 +22,7 @@ public:
 
 	void bindFaceColors(const unsigned int shaderID);
 
+	// Legacy: Should probably remove if no longer needed
 	void rotateSmoothX(float radians, float timePercent);
 	void rotateSmoothY(float radians, float timePercent);
 	void rotateSmoothZ(float radians, float timePercent);
@@ -29,6 +30,13 @@ public:
 	void rotateXImmediate(float radians);
 	void rotateYImmediate(float radians);
 	void rotateZImmediate(float radians);
+
+	void rotateXByPercentage(float targetRadians, float dt);
+	void rotateYByPercentage(float targetRadians, float dt);
+	void rotateZByPercentage(float targetRadians, float dt);
+
+	void toPreviousStateImmediate();
+	void updateColliderPosition();
 
 	void setID(int id);
 	void setStartPosition(const glm::vec3& position);
@@ -73,8 +81,6 @@ private:
 	void rotateVectors(Quaternion newOrientation);
 	float clampNormalScalar(float scalar);
 	void recalculateOrientation();
-
-	void updateColliderPosition();
 };
 
 #endif

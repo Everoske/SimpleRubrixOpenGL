@@ -27,12 +27,6 @@ public:
 
 	void renderCubes(const unsigned int& cubeVAO, const unsigned int& shaderID) const;
 	void update(float deltaTime);
-	
-	void highlightSelectedCubes(int axis, RubrikSection section);
-	void rotateCubesSmooth(int axis, RubrikSection section, float deltaTime, bool counterClockwise = false);
-	void rotateCubesSmoothX(RubrikSection section, float deltaTime, bool counterClockwise = false);
-	void rotateCubesSmoothY(RubrikSection section, float deltaTime, bool counterClockwise = false);
-	void rotateCubesSmoothZ(RubrikSection section, float deltaTime, bool counterClockwise = false);
 
 	void scrambleSmooth(float deltaTime);
 	void scrambleImmediate();
@@ -49,13 +43,16 @@ private:
 	float mDisplacement;
 	float mErrorMargin;
 
-	bool mbIsRotating;
-	float mCurrentRotateTime;
-	float mRotateCompletionTime;
+	// Scramble Parameters
 	bool mbIsScrambling = false;
 	int mScrambleAxis = -1;
 	int mTotalScrambleRotations = 5;
 	int mCurrentScrambleRotations = 0;
+	float mScrambleTargetRotation = 0.0f;
+
+	bool mbIsRotating;
+	float mCurrentRotateTime;
+	float mRotateCompletionTime;
 	RubrikSection mScrambleSection;
 
 	PFnOnRotationComplete onRotationComplete;
@@ -76,14 +73,22 @@ private:
 	void createCubes();
 
 	void findSectionCubes();
+	void highlightSection();
+	void clearSectionCubes();
+	void changeSectionCubes();
+
+	// Rotation Methods
+
+	void rotateSectionPercentage(float targetRadians, float dt, int axis);
+	void rotateSectionImmediate(float radians, int axis);
+
+	void toPreviousStateImmediate();
+	void toPreviousState();
+	void updateSectionColliders();
 
 	void clampRotatingCubes();
 	float clampCoordinate(float coordinate) const;
 	glm::vec3 clampPosition(const glm::vec3& position) const;
-
-	void rotateCubesX(RubrikSection section);
-	void rotateCubesY(RubrikSection section);
-	void rotateCubesZ(RubrikSection section);
 
 	void setupScrambleRotation();
 	void performSmoothScrambleRotation(float deltaTime);

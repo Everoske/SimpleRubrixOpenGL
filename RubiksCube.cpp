@@ -32,124 +32,6 @@ void RubiksCube::update(float deltaTime)
 
 }
 
-
-
-void RubiksCube::highlightSelectedCubes(int axis, RubrikSection section)
-{
-	// Clear Current Selection
-	for (int it : selectedIndices)
-		cubes.at(it).setHighlight(false);
-
-	findSelectedIndices(axis, section);
-
-	// Highlight New Selection
-	for (int it : selectedIndices)
-		cubes.at(it).setHighlight(true);
-}
-
-void RubiksCube::rotateCubesSmooth(int axis, RubrikSection section, float deltaTime, bool counterClockwise)
-{
-	switch (axis)
-	{
-	case 1:
-		rotateCubesSmoothX(section, deltaTime, counterClockwise);
-		break;
-	case 2:
-		rotateCubesSmoothY(section, deltaTime, counterClockwise);
-		break;
-	case 3:
-		rotateCubesSmoothZ(section, deltaTime, counterClockwise);
-		break;
-	}
-}
-
-void RubiksCube::rotateCubesSmoothX(RubrikSection section, float deltaTime, bool counterClockwise)
-{
-	if (!mbIsRotating)
-	{
-		float xPosition = getSectionCoordinate(section);
-		findRotatingIndicesX(xPosition);
-		mCurrentRotateTime = 0.0f;
-		mbIsRotating = true;
-	}
-
-	mCurrentRotateTime += deltaTime;
-	float targetRot = counterClockwise ? -90.0f : 90.0f;
-	targetRot = glm::radians(targetRot);
-	float timePercent = mCurrentRotateTime / mRotateCompletionTime;
-	for (int i : rotatingIndices)
-	{
-		cubes.at(i).rotateSmoothX(targetRot, timePercent);
-	}
-
-	if (mCurrentRotateTime >= mRotateCompletionTime)
-	{
-		clampRotatingCubes();
-		mbIsRotating = false;
-		rotatingIndices = std::vector<int>();
-		if (onRotationComplete)
-			onRotationComplete();
-	}
-}
-
-void RubiksCube::rotateCubesSmoothY(RubrikSection section, float deltaTime, bool counterClockwise)
-{
-	if (!mbIsRotating)
-	{
-		float yPosition = getSectionCoordinate(section);
-		findRotatingIndicesY(yPosition);
-		mCurrentRotateTime = 0.0f;
-		mbIsRotating = true;
-	}
-
-	mCurrentRotateTime += deltaTime;
-	float targetRot = counterClockwise ? -90.0f : 90.0f;
-	targetRot = glm::radians(targetRot);
-	float timePercent = mCurrentRotateTime / mRotateCompletionTime;
-	for (int i : rotatingIndices)
-	{
-		cubes.at(i).rotateSmoothY(targetRot, timePercent);
-	}
-
-	if (mCurrentRotateTime >= mRotateCompletionTime)
-	{
-		clampRotatingCubes();
-		mbIsRotating = false;
-		rotatingIndices = std::vector<int>();
-		if (onRotationComplete)
-			onRotationComplete();
-	}
-}
-
-void RubiksCube::rotateCubesSmoothZ(RubrikSection section, float deltaTime, bool counterClockwise)
-{
-	if (!mbIsRotating)
-	{
-		float zPosition = getSectionCoordinate(section);
-		findRotatingIndicesZ(zPosition);
-		mCurrentRotateTime = 0.0f;
-		mbIsRotating = true;
-	}
-
-	mCurrentRotateTime += deltaTime;
-	float targetRot = counterClockwise ? -90.0f : 90.0f;
-	targetRot = glm::radians(targetRot);
-	float timePercent = mCurrentRotateTime / mRotateCompletionTime;
-	for (int i : rotatingIndices)
-	{
-		cubes.at(i).rotateSmoothZ(targetRot, timePercent);
-	}
-
-	if (mCurrentRotateTime >= mRotateCompletionTime)
-	{
-		clampRotatingCubes();
-		mbIsRotating = false;
-		rotatingIndices = std::vector<int>();
-		if (onRotationComplete)
-			onRotationComplete();
-	}
-}
-
 void RubiksCube::scrambleSmooth(float deltaTime)
 {
 	// If Not Scrambling: Do Scramble Setup
@@ -349,13 +231,123 @@ void RubiksCube::findSectionCubes()
 	mSelectedSectionIDs.push_back(selectedCube->getID());
 }
 
+void RubiksCube::highlightSection()
+{
+	for (int cubeID : mSelectedSectionIDs)
+	{
+		if (cubeID == mSelectedCubeID)
+			continue;
+
+		mCubeMap.at(cubeID)->setHighlight(true);
+	}
+}
+
+void RubiksCube::clearSectionCubes()
+{
+	for (int cubeID : mSelectedSectionIDs)
+	{
+		mCubeMap.at(cubeID)->setHighlight(false);
+	}
+
+	mSelectedSectionIDs.clear();
+}
+
+void RubiksCube::changeSectionCubes()
+{
+	// toPreviousStateImmediate();
+
+	// Clear all section cubes except the current selected cube
+	for (int cubeID : mSelectedSectionIDs)
+	{
+		if (cubeID == mSelectedCubeID)
+			continue;
+
+		mCubeMap.at(cubeID)->setHighlight(false);
+	}
+
+	mSelectedSectionIDs.clear();
+	//selectSection();
+
+}
+
+void RubiksCube::rotateSectionPercentage(float targetRadians, float dt, int axis)
+{
+	for (int cubeID : mSelectedSectionIDs)
+	{
+		switch (axis)
+		{
+		case 0:
+			mCubeMap.at(cubeID)->rotateXByPercentage(targetRadians, dt);
+			break;
+		case 1:
+			mCubeMap.at(cubeID)->rotateYByPercentage(targetRadians, dt);
+			break;
+		case 2:
+			mCubeMap.at(cubeID)->rotateZByPercentage(targetRadians, dt);
+			break;
+		}
+	}
+}
+
+void RubiksCube::rotateSectionImmediate(float radians, int axis)
+{
+	for (int cubeID : mSelectedSectionIDs)
+	{
+		switch (axis)
+		{
+		case 0:
+			mCubeMap.at(cubeID)->rotateXImmediate(radians);
+			break;
+		case 1:
+			mCubeMap.at(cubeID)->rotateYImmediate(radians);
+			break;
+		case 2:
+			mCubeMap.at(cubeID)->rotateZImmediate(radians);
+			break;
+		}
+	}
+
+	clampRotatingCubes();
+	updateSectionColliders();
+}
+
+void RubiksCube::toPreviousStateImmediate()
+{
+	for (int cubeID : mSelectedSectionIDs)
+		mCubeMap.at(cubeID)->toPreviousStateImmediate();
+	mPlayerRotationInput = 0.0f;
+}
+
+void RubiksCube::toPreviousState()
+{
+	if (mPlayerRotationInput < FLT_EPSILON && mPlayerRotationInput > -FLT_EPSILON)
+	{
+		toPreviousStateImmediate();
+		clearSectionCubes();
+		return;
+	}
+
+	//mbAutoResetRotation = true;
+	//mAutoFromDegrees = mPlayerRotationInput > 0.0f ? -90.0f : 90.0f;
+	//mCurrentRotateTime = glm::abs(mPlayerRotationInput) / 90.0f * mAutoRotateTime;
+	mPlayerRotationInput = 0.0f;
+}
+
+void RubiksCube::updateSectionColliders()
+{
+	for (int cubeID : mSelectedSectionIDs)
+	{
+		mCubeMap.at(cubeID)->updateColliderPosition();
+	}
+}
+
 // TODO: Remove and move logic into Cube?
 void RubiksCube::clampRotatingCubes()
 {
-	for (int i : rotatingIndices)
+	for (int cubeID : mSelectedSectionIDs)
 	{
-		glm::vec3 currentPosition = cubes.at(i).getCurrentPosition();
-		cubes.at(i).setCurrentPosition(clampPosition(currentPosition));
+		glm::vec3 currentPosition = mCubeMap.at(cubeID)->getCurrentPosition();
+		mCubeMap.at(cubeID)->setCurrentPosition(clampPosition(currentPosition));
 	}
 }
 
@@ -374,72 +366,6 @@ glm::vec3 RubiksCube::clampPosition(const glm::vec3& position) const
 {
 	glm::vec3 newPos = glm::vec3(clampCoordinate(position.x), clampCoordinate(position.y), clampCoordinate(position.z));
 	return newPos;
-}
-
-void RubiksCube::rotateCubesX(RubrikSection section)
-{
-	if (!mbIsRotating)
-	{
-		float xPosition = getSectionCoordinate(section);
-		findRotatingIndicesX(xPosition);
-	}
-	else
-	{
-		mbIsRotating = false;
-	}
-
-	constexpr float targetRot = glm::radians(90.0f);
-	for (int i : rotatingIndices)
-	{
-		cubes.at(i).rotateXImmediate(targetRot);
-	}
-
-	clampRotatingCubes();
-	rotatingIndices = std::vector<int>();
-}
-
-void RubiksCube::rotateCubesY(RubrikSection section)
-{
-	if (!mbIsRotating)
-	{
-		float yPosition = getSectionCoordinate(section);
-		findRotatingIndicesY(yPosition);
-	}
-	else
-	{
-		mbIsRotating = false;
-	}
-
-	constexpr float targetRot = glm::radians(90.0f);
-	for (int i : rotatingIndices)
-	{
-		cubes.at(i).rotateYImmediate(targetRot);
-	}
-
-	clampRotatingCubes();
-	rotatingIndices = std::vector<int>();
-}
-
-void RubiksCube::rotateCubesZ(RubrikSection section)
-{
-	if (!mbIsRotating)
-	{
-		float zPosition = getSectionCoordinate(section);
-		findRotatingIndicesZ(zPosition);
-	}
-	else
-	{
-		mbIsRotating = false;
-	}
-
-	constexpr float targetRot = glm::radians(90.0f);
-	for (int i : rotatingIndices)
-	{
-		cubes.at(i).rotateZImmediate(targetRot);
-	}
-
-	clampRotatingCubes();
-	rotatingIndices = std::vector<int>();
 }
 
 void RubiksCube::setupScrambleRotation()
@@ -481,21 +407,12 @@ void RubiksCube::setupScrambleRotation()
 
 void RubiksCube::performSmoothScrambleRotation(float deltaTime)
 {
-	rotateCubesSmooth(mScrambleAxis, mScrambleSection, deltaTime);
+	mCurrentRotateTime += deltaTime;
+	float dt = mCurrentRotateTime / mRotateCompletionTime;
+	rotateSectionPercentage(glm::radians(90.0f), dt, mScrambleAxis);
 }
 
 void RubiksCube::performImmediateScrambleRotation()
 {
-	switch (mScrambleAxis)
-	{
-	case 1:
-		rotateCubesX(mScrambleSection);
-		break;
-	case 2:
-		rotateCubesY(mScrambleSection);
-		break;
-	case 3:
-		rotateCubesZ(mScrambleSection);
-		break;
-	}
+	rotateSectionImmediate(glm::radians(90.0f), mScrambleAxis);
 }

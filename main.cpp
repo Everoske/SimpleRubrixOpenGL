@@ -176,16 +176,16 @@ int main()
 			rubiksCube.scrambleSmooth(deltaTime);
 		}
 
-		if (!isScrambling && highlightCubesThisFrame)
-		{
-			rubiksCube.highlightSelectedCubes(selectedAxis, selectedSection);
-			highlightCubesThisFrame = false;
-		}
+		//if (!isScrambling && highlightCubesThisFrame)
+		//{
+		//	rubiksCube.highlightSelectedCubes(selectedAxis, selectedSection);
+		//	highlightCubesThisFrame = false;
+		//}
 
-		if (playerRotationActive)
-		{
-			rubiksCube.rotateCubesSmooth(selectedAxis, selectedSection, deltaTime, counterClockwise);
-		}
+		//if (playerRotationActive)
+		//{
+		//	rubiksCube.rotateCubesSmooth(selectedAxis, selectedSection, deltaTime, counterClockwise);
+		//}
 
 		rubiksCube.renderCubes(VAO, colorShader);
 

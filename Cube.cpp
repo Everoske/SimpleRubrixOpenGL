@@ -2,6 +2,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 #include "CollisionSystem.h"
+#include "RubiksCube.h"
 
 int Cube::mNextValidID = 0;
 
@@ -185,6 +186,70 @@ void Cube::rotateZImmediate(float radians)
 	setCurrentPosition(newPosition);
 }
 
+void Cube::rotateXByPercentage(float targetRadians, float dt)
+{
+	if (!mbIsRotating)
+	{
+		mbIsRotating = true;
+		mLastFixedPosition = mCurrentPosition;
+		mLastFixedOrientation = mOrientation;
+	}
+
+	glm::vec3 rightVector = glm::cross(mUp, mForward);
+	rightVector = glm::vec3(clampNormalScalar(rightVector.x), clampNormalScalar(rightVector.y), clampNormalScalar(rightVector.z));
+	Quaternion targetRotator = Quaternion::getRotationQuaternion(rightVector, targetRadians);
+	Quaternion targetOrientation = targetRotator * mLastFixedOrientation;
+
+	mOrientation = Quaternion::slerp(mLastFixedOrientation, targetOrientation, dt);
+	glm::vec3 newPosition = Quaternion::slerpPoint(mLastFixedPosition, glm::vec3(1.0f, 0.0f, 0.0f), targetRadians, dt);
+	mCurrentPosition = newPosition;
+}
+
+void Cube::rotateYByPercentage(float targetRadians, float dt)
+{
+	if (!mbIsRotating)
+	{
+		mbIsRotating = true;
+		mLastFixedPosition = mCurrentPosition;
+		mLastFixedOrientation = mOrientation;
+	}
+
+	Quaternion targetRotator = Quaternion::getRotationQuaternion(mUp, targetRadians);
+	Quaternion targetOrientation = targetRotator * mLastFixedOrientation;
+
+	mOrientation = Quaternion::slerp(mLastFixedOrientation, targetOrientation, dt);
+	glm::vec3 newPosition = Quaternion::slerpPoint(mLastFixedPosition, glm::vec3(0.0f, -1.0f, 0.0f), targetRadians, dt);
+	mCurrentPosition = newPosition;
+}
+
+void Cube::rotateZByPercentage(float targetRadians, float dt)
+{
+	if (!mbIsRotating)
+	{
+		mbIsRotating = true;
+		mLastFixedPosition = mCurrentPosition;
+		mLastFixedOrientation = mOrientation;
+	}
+
+	Quaternion targetRotator = Quaternion::getRotationQuaternion(-mForward, targetRadians);
+	Quaternion targetOrientation = targetRotator * mLastFixedOrientation;
+
+	mOrientation = Quaternion::slerp(mLastFixedOrientation, targetOrientation, dt);
+	glm::vec3 newPosition = Quaternion::slerpPoint(mLastFixedPosition, glm::vec3(0.0f, 0.0f, -1.0f), targetRadians, dt);
+	mCurrentPosition = newPosition;
+}
+
+void Cube::toPreviousStateImmediate()
+{
+	mOrientation = mLastFixedOrientation;
+	mCurrentPosition = mLastFixedPosition;
+}
+
+void Cube::updateColliderPosition()
+{
+	CollisionSystem::Instance()->updateColliderPosition(mID, mCurrentPosition);
+}
+
 void Cube::setID(int id)
 {
 	assert(id >= mNextValidID);
@@ -206,7 +271,6 @@ void Cube::setCurrentPosition(const glm::vec3& position)
 void Cube::setOrientation(const Quaternion& newOrientation)
 {
 	mOrientation = newOrientation;
-	//std::cout << orientation.v.x << ", " << orientation.v.y << ", " << orientation.v.z << std::endl;
 	rotateVectors(mOrientation);
 }
 
@@ -289,9 +353,4 @@ void Cube::recalculateOrientation()
 		Quaternion rotator = Quaternion::getRotationQuaternion(mForward, zAngle);
 		mOrientation = rotator * Quaternion();
 	}
-}
-
-void Cube::updateColliderPosition()
-{
-	CollisionSystem::Instance()->updateColliderPosition(mID, mCurrentPosition);
 }

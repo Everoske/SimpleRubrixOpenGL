@@ -8,9 +8,6 @@ RubiksCube::RubiksCube(float cubeDisplacement, float floatMargin, float rotation
 	mDisplacement(cubeDisplacement), mErrorMargin(floatMargin), mRotateCompletionTime(rotationTime)
 {
 	createCubes();
-	rotatingIndices = std::vector<int>();
-	selectedIndices = std::vector<int>();
-	mbIsRotating = false;
 }
 
 void RubiksCube::renderCubes(const unsigned int& cubeVAO, const unsigned int& shaderID) const
@@ -28,6 +25,12 @@ void RubiksCube::renderCubes(const unsigned int& cubeVAO, const unsigned int& sh
 }
 
 void RubiksCube::update(float deltaTime)
+{
+	if (mbIsScrambling)
+		scrambleSmooth(deltaTime);
+}
+
+void RubiksCube::startScrambleSmooth(int scrambleCount)
 {
 
 }
@@ -409,10 +412,18 @@ void RubiksCube::performSmoothScrambleRotation(float deltaTime)
 {
 	mCurrentRotateTime += deltaTime;
 	float dt = mCurrentRotateTime / mRotateCompletionTime;
-	rotateSectionPercentage(glm::radians(90.0f), dt, mScrambleAxis);
+	
+	if (dt >= 1.0f)
+	{
+		performImmediateScrambleRotation();
+		return;
+	}
+
+	rotateSectionPercentage(glm::radians(mScrambleTargetRotation), dt, mScrambleAxis);
 }
 
 void RubiksCube::performImmediateScrambleRotation()
 {
-	rotateSectionImmediate(glm::radians(90.0f), mScrambleAxis);
+	rotateSectionImmediate(glm::radians(mScrambleTargetRotation), mScrambleAxis);
+	clearSectionCubes();
 }

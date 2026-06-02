@@ -51,7 +51,6 @@ void onScrambleCompleted();
 int selectedAxis = 1;
 RubrikSection selectedSection = RubrikSection::MIDDLE;
 bool counterClockwise = false;
-bool isScrambling = false;
 bool playerRotationActive = false;
 
 int main()
@@ -149,7 +148,7 @@ int main()
 
 	rubiksCube.setOnScrambleComplete(onScrambleCompleted);
 	rubiksCube.setRotationCompleteCallback(onRotationCompleted);
-	isScrambling = true;
+	rubiksCube.startScrambleSmooth(5);
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -171,22 +170,7 @@ int main()
 
 		glBindVertexArray(VAO);
 
-		if (isScrambling)
-		{
-			rubiksCube.scrambleSmooth(deltaTime);
-		}
-
-		//if (!isScrambling && highlightCubesThisFrame)
-		//{
-		//	rubiksCube.highlightSelectedCubes(selectedAxis, selectedSection);
-		//	highlightCubesThisFrame = false;
-		//}
-
-		//if (playerRotationActive)
-		//{
-		//	rubiksCube.rotateCubesSmooth(selectedAxis, selectedSection, deltaTime, counterClockwise);
-		//}
-
+		rubiksCube.update(deltaTime);
 		rubiksCube.renderCubes(VAO, colorShader);
 
 		glfwSwapBuffers(window);
@@ -385,7 +369,7 @@ void processInput(GLFWwindow* window)
 // TODO: Start Rubik's Rotation Only When Allowable
 void processPlayerRotate()
 {
-	if (isScrambling || playerRotationActive || !canRotate)
+	if (playerRotationActive || !canRotate)
 		return;
 	playerRotationActive = true;
 	canRotate = false;
@@ -393,7 +377,7 @@ void processPlayerRotate()
 
 void processPlayerChangeAxis()
 {
-	if (isScrambling || playerRotationActive || !canChangeAxis)
+	if (playerRotationActive || !canChangeAxis)
 		return;
 	selectedAxis = ((selectedAxis + 3) % 3) + 1;
 	canChangeAxis = false;
@@ -402,7 +386,7 @@ void processPlayerChangeAxis()
 
 void processPlayerChangeSection(int direction)
 {
-	if (isScrambling || playerRotationActive || !canChangeSection)
+	if (playerRotationActive || !canChangeSection)
 		return;
 
 	int sectionInt = (((int)selectedSection + direction) % 3) + 1;
@@ -413,7 +397,7 @@ void processPlayerChangeSection(int direction)
 
 void processPlayerSwitchClockwise()
 {
-	if (isScrambling || playerRotationActive || !canChangeClockwise)
+	if (playerRotationActive || !canChangeClockwise)
 		return;
 	counterClockwise = !counterClockwise;
 	canChangeClockwise = false;
@@ -428,5 +412,5 @@ void onRotationCompleted()
 
 void onScrambleCompleted()
 {
-	isScrambling = false;
+
 }

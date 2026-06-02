@@ -28,6 +28,7 @@ public:
 	void renderCubes(const unsigned int& cubeVAO, const unsigned int& shaderID) const;
 	void update(float deltaTime);
 
+	void startScrambleSmooth(int scrambleCount);
 	void scrambleSmooth(float deltaTime);
 	void scrambleImmediate();
 	bool isRubikCubeSolved();
@@ -38,8 +39,6 @@ public:
 
 private:
 	CubeMap mCubeMap;
-	std::vector<int> rotatingIndices;
-	std::vector<int> selectedIndices;
 	float mDisplacement;
 	float mErrorMargin;
 
@@ -48,16 +47,15 @@ private:
 	int mScrambleAxis = -1;
 	int mTotalScrambleRotations = 5;
 	int mCurrentScrambleRotations = 0;
-	float mScrambleTargetRotation = 0.0f;
+	float mScrambleTargetRotation = 90.0f;
 
-	bool mbIsRotating;
+	bool mbIsRotating = false;
 	float mCurrentRotateTime;
 	float mRotateCompletionTime;
 	RubrikSection mScrambleSection;
 
 	PFnOnRotationComplete onRotationComplete;
 	PFnOnScrambleComplete onScrambleComplete;
-
 
 	// Cube Selection
 	int mLastSelectedCubeID = -1;

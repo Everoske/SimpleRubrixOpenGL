@@ -49,7 +49,7 @@ void onScrambleCompleted();
 
 // Temp Game Settings
 int selectedAxis = 1;
-RubrikSection selectedSection = RubrikSection::MIDDLE;
+RubiksSection selectedSection = RubiksSection::MIDDLE;
 bool counterClockwise = false;
 bool playerRotationActive = false;
 
@@ -144,7 +144,7 @@ int main()
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
-	RubiksCube rubiksCube = RubiksCube(0.6f, 0.15f, 0.5f);
+	RubiksCube rubiksCube = RubiksCube(0.6f, 0.15f, 1.0f);
 
 	rubiksCube.setOnScrambleComplete(onScrambleCompleted);
 	rubiksCube.setRotationCompleteCallback(onRotationCompleted);
@@ -390,7 +390,7 @@ void processPlayerChangeSection(int direction)
 		return;
 
 	int sectionInt = (((int)selectedSection + direction) % 3) + 1;
-	selectedSection = static_cast<RubrikSection>(sectionInt);
+	selectedSection = static_cast<RubiksSection>(sectionInt);
 	canChangeSection = false;
 	highlightCubesThisFrame = true;
 }

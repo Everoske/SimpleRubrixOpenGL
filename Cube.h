@@ -44,6 +44,8 @@ public:
 	void setOrientation(const Quaternion& newOrientation);
 	void setHighlight(bool highlightCube);
 
+	void initiateTurn();
+
 
 	int getID() const { return mID; }
 	glm::vec3 getHalfExtents() const { return mHalfExtents; }

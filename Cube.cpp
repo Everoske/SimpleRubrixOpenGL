@@ -32,7 +32,8 @@ Cube::Cube(glm::vec3 startPosition, glm::vec3 halfExtents,
 
 	mLastFixedOrientation = mOrientation;
 	mLastFixedPosition = mCurrentPosition;
-
+	
+	// TODO: Need to disable collision for middle cube
 	CollisionSystem::Instance()->generateAABBCollider(mID, mHalfExtents, mCurrentPosition);
 }
 
@@ -277,6 +278,16 @@ void Cube::setOrientation(const Quaternion& newOrientation)
 void Cube::setHighlight(bool highlightCube)
 {
 	mbHighlighted = highlightCube;
+}
+
+void Cube::initiateTurn()
+{
+	if (!mbIsRotating)
+	{
+		mbIsRotating = true;
+		mLastFixedPosition = mCurrentPosition;
+		mLastFixedOrientation = mOrientation;
+	}
 }
 
 glm::mat4x4 Cube::getTransformationMatrix() const

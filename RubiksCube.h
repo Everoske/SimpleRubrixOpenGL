@@ -6,7 +6,7 @@
 #include <memory>
 #include "Cube.h"
 
-enum RubrikSection
+enum RubiksSection
 {
 	FRONT = 1,
 	MIDDLE = 2,
@@ -29,7 +29,6 @@ public:
 	void update(float deltaTime);
 
 	void startScrambleSmooth(int scrambleCount);
-	void scrambleSmooth(float deltaTime);
 	void scrambleImmediate();
 	bool isRubikCubeSolved();
 
@@ -45,14 +44,14 @@ private:
 	// Scramble Parameters
 	bool mbIsScrambling = false;
 	int mScrambleAxis = -1;
-	int mTotalScrambleRotations = 5;
-	int mCurrentScrambleRotations = 0;
+	int mTargetScrambleCount = 5;
+	int mCurrentScrambleCount = 0;
 	float mScrambleTargetRotation = 90.0f;
 
 	bool mbIsRotating = false;
 	float mCurrentRotateTime;
 	float mRotateCompletionTime;
-	RubrikSection mScrambleSection;
+	RubiksSection mScrambleSection;
 
 	PFnOnRotationComplete onRotationComplete;
 	PFnOnScrambleComplete onScrambleComplete;
@@ -70,7 +69,12 @@ private:
 
 	void createCubes();
 
+	// Cube/Section Selection
+	void selectCube(int selectedID);
+	void selectSection();
+
 	void findSectionCubes();
+	void findSectionCubes(RubiksSection section, int axis);
 	void highlightSection();
 	void clearSectionCubes();
 	void changeSectionCubes();
@@ -88,6 +92,8 @@ private:
 	float clampCoordinate(float coordinate) const;
 	glm::vec3 clampPosition(const glm::vec3& position) const;
 
+	// Scramble methods
+	void executeScrambleSmooth(float deltaTime);
 	void setupScrambleRotation();
 	void performSmoothScrambleRotation(float deltaTime);
 	void performImmediateScrambleRotation();

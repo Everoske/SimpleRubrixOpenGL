@@ -27,60 +27,30 @@ void RubiksCube::renderCubes(const unsigned int& cubeVAO, const unsigned int& sh
 void RubiksCube::update(float deltaTime)
 {
 	if (mbIsScrambling)
-		scrambleSmooth(deltaTime);
+		executeScrambleSmooth(deltaTime);
 }
 
 void RubiksCube::startScrambleSmooth(int scrambleCount)
 {
-
-}
-
-void RubiksCube::scrambleSmooth(float deltaTime)
-{
-	// If Not Scrambling: Do Scramble Setup
-	if (!mbIsScrambling)
-	{
-		mCurrentScrambleRotations = 0;
-		setupScrambleRotation();
-		mbIsScrambling = true;
-		performSmoothScrambleRotation(deltaTime);
-		return;
-	}
-
-	if (mbIsRotating)
-	{
-		performSmoothScrambleRotation(deltaTime);
-	}
-	else
-	{
-		mCurrentScrambleRotations++;
-		if (mCurrentScrambleRotations < mTotalScrambleRotations)
-		{
-			setupScrambleRotation();
-			mbIsScrambling = true;
-			performSmoothScrambleRotation(deltaTime);
-		}
-		else
-		{
-			mbIsScrambling = false;
-			onScrambleComplete();
-		}
-	}
+	mCurrentScrambleCount = 0;
+	mTargetScrambleCount = scrambleCount;
+	setupScrambleRotation();
+	mbIsScrambling = true;
 }
 
 void RubiksCube::scrambleImmediate()
 {
 	if (!mbIsScrambling)
 	{
-		mCurrentScrambleRotations = 0;
+		mCurrentScrambleCount = 0;
 	}
 	else
 	{
 		mbIsScrambling = false;
 	}
 
-	int remaining = mbIsRotating ? mCurrentScrambleRotations : mCurrentScrambleRotations + 1;
-	for (remaining; remaining < mTotalScrambleRotations; remaining++)
+	int remaining = mbIsRotating ? mCurrentScrambleCount : mCurrentScrambleCount + 1;
+	for (remaining; remaining < mTargetScrambleCount; remaining++)
 	{
 		setupScrambleRotation();
 		performImmediateScrambleRotation();
@@ -182,6 +152,9 @@ const glm::vec3 Black = glm::vec3(0.05f, 0.05f, 0.05f);
 	std::shared_ptr<Cube> cube26 = std::make_shared<Cube>(cubePositions[25], halfExtents, Yellow, Black, Orange, Black, Blue, Black);
 	std::shared_ptr<Cube> cube27 = std::make_shared<Cube>(cubePositions[26], halfExtents, Black, Black, Orange, Black, Blue, White);
 
+	// Disable collision for center-most cube
+	// cube10->disableCollision();
+
 	mCubeMap.insert(std::make_pair(cube1->getID(), cube1));
 	mCubeMap.insert(std::make_pair(cube2->getID(), cube2));
 	mCubeMap.insert(std::make_pair(cube3->getID(), cube3));
@@ -213,6 +186,28 @@ const glm::vec3 Black = glm::vec3(0.05f, 0.05f, 0.05f);
 	mCubeMap.insert(std::make_pair(cube27->getID(), cube27));
 }
 
+void RubiksCube::selectCube(int selectedID)
+{
+	mSelectedCubeID = selectedID;
+	mLastSelectedCubeID = -1;
+	mbPlayerRotating = true;
+	mCubeMap.at(selectedID)->setHighlight(true);
+}
+
+void RubiksCube::selectSection()
+{
+	// Return early if no axis selected
+	if (mSelectedAxis < 0) return;
+
+	findSectionCubes();
+	highlightSection();
+
+	for (int cubeID : mSelectedSectionIDs)
+	{
+		mCubeMap.at(cubeID)->initiateTurn();
+	}
+}
+
 void RubiksCube::findSectionCubes()
 {
 	std::shared_ptr<Cube> selectedCube = mCubeMap.at(mSelectedCubeID);
@@ -220,18 +215,43 @@ void RubiksCube::findSectionCubes()
 
 	mSelectedSectionIDs = std::vector<int>();
 
-	CubeMap::const_iterator it;
+	CubeMap::const_iterator ent;
 
-	for (it = mCubeMap.begin(); it != mCubeMap.end(); it++)
+	for (ent = mCubeMap.begin(); ent != mCubeMap.end(); ent++)
 	{
-		if (it->first == selectedCube->getID())
+		if (ent->first == selectedCube->getID())
 			continue;
 
-		if (it->second->getCurrentPosition()[mSelectedAxis] == axisValue)
-			mSelectedSectionIDs.push_back(it->first);
+		if (ent->second->getCurrentPosition()[mSelectedAxis] == axisValue)
+			mSelectedSectionIDs.push_back(ent->first);
 	}
 
 	mSelectedSectionIDs.push_back(selectedCube->getID());
+}
+
+void RubiksCube::findSectionCubes(RubiksSection section, int axis)
+{
+	float axisValue = 0.0f;
+	switch (mScrambleSection)
+	{
+	case RubiksSection::BACK:
+		axisValue = -1.0f;
+		break;
+	case RubiksSection::FRONT:
+		axisValue = 1.0f;
+		break;
+	}
+
+	axisValue *= mDisplacement;
+	mSelectedSectionIDs = std::vector<int>();
+
+	CubeMap::const_iterator ent;
+
+	for (ent = mCubeMap.begin(); ent != mCubeMap.end(); ent++)
+	{
+		if (ent->second->getCurrentPosition()[axis] == axisValue)
+			mSelectedSectionIDs.push_back(ent->first);
+	}
 }
 
 void RubiksCube::highlightSection()
@@ -257,7 +277,7 @@ void RubiksCube::clearSectionCubes()
 
 void RubiksCube::changeSectionCubes()
 {
-	// toPreviousStateImmediate();
+	toPreviousStateImmediate();
 
 	// Clear all section cubes except the current selected cube
 	for (int cubeID : mSelectedSectionIDs)
@@ -269,7 +289,7 @@ void RubiksCube::changeSectionCubes()
 	}
 
 	mSelectedSectionIDs.clear();
-	//selectSection();
+	selectSection();
 
 }
 
@@ -371,29 +391,54 @@ glm::vec3 RubiksCube::clampPosition(const glm::vec3& position) const
 	return newPos;
 }
 
+
+// Perform all scramble logic including setting up
+void RubiksCube::executeScrambleSmooth(float deltaTime)
+{
+	if (!mbIsScrambling) return;
+
+	if (mbIsRotating)
+	{
+		performSmoothScrambleRotation(deltaTime);
+	}
+	else
+	{
+		if (mCurrentScrambleCount < mTargetScrambleCount)
+		{
+			setupScrambleRotation();
+			performSmoothScrambleRotation(deltaTime);
+		}
+		else
+		{
+			mbIsScrambling = false;
+			onScrambleComplete();
+		}
+	}
+}
+
 void RubiksCube::setupScrambleRotation()
 {
 	// TODO: Try Using PCG32
 	srand(time(0));
-	int newAxis = (rand() % 3) + 1;
+	int newAxis = rand() % 3;
 	int newSection = (rand() % 3) + 1;
-	int oldSection = (int) mScrambleSection;
+	int oldSection = (int)mScrambleSection;
 
 	if (newAxis == mScrambleAxis && newSection == oldSection)
 	{
 		if (newAxis == newSection)
 		{
-			newAxis = ((newAxis + 4) % 3) + 1;
+			newAxis = (newAxis + 3) % 3;
 			newSection = ((newSection + 2) % 3) + 1;
 		}
 		else if (newAxis % 2 > 0 && newSection % 2 > 0)
 		{
-			newAxis = ((newAxis + 4) % 3) + 1;
+			newAxis = (newAxis + 2) % 3;
 			newSection = ((newSection + 4) % 3) + 1;
 		}
 		else if (newAxis % 2 == 0 && newSection % 2 == 0)
 		{
-			newAxis = ((newAxis + 2) % 3) + 1;
+			newAxis = (newAxis + 1) % 3;
 			newSection = ((newSection + 2) % 3) + 1;
 		}
 		else
@@ -405,7 +450,10 @@ void RubiksCube::setupScrambleRotation()
 	}
 
 	mScrambleAxis = newAxis;
-	mScrambleSection = static_cast<RubrikSection>(newSection);
+	mScrambleSection = static_cast<RubiksSection>(newSection);
+	mCurrentRotateTime = 0.0f;
+	mbIsRotating = true;
+	findSectionCubes(mScrambleSection, mScrambleAxis);
 }
 
 void RubiksCube::performSmoothScrambleRotation(float deltaTime)
@@ -416,6 +464,8 @@ void RubiksCube::performSmoothScrambleRotation(float deltaTime)
 	if (dt >= 1.0f)
 	{
 		performImmediateScrambleRotation();
+		mCurrentScrambleCount += 1;
+		mbIsRotating = false;
 		return;
 	}
 

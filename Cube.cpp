@@ -180,10 +180,10 @@ void Cube::rotateZImmediate(float radians)
 		mLastFixedOrientation = mOrientation;
 	}
 
-	Quaternion targetRotator = Quaternion::getRotationQuaternion(mForward, radians);
+	Quaternion targetRotator = Quaternion::getRotationQuaternion(-mForward, radians);
 	Quaternion targetOrientation = targetRotator * mLastFixedOrientation;
 	setOrientation(targetOrientation);
-	glm::vec3 newPosition = Quaternion::rotatePoint(glm::vec3(0.0f, 0.0f, 1.0f), mLastFixedPosition, radians);
+	glm::vec3 newPosition = Quaternion::rotatePoint(glm::vec3(0.0f, 0.0f, -1.0f), mLastFixedPosition, radians);
 	setCurrentPosition(newPosition);
 }
 

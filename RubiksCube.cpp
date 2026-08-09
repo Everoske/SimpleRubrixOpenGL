@@ -444,8 +444,8 @@ void RubiksCube::setupScrambleRotation()
 		else
 		{
 			int temp = newAxis;
-			newAxis = newSection;
-			newSection = temp;
+			newAxis = newSection % 3;
+			newSection = temp + 1;
 		}
 	}
 

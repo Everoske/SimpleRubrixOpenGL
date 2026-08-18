@@ -2,7 +2,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
-#include "RubiksCube.h"
+#include "CollisionSystem.h"
 
 RubiksCube::RubiksCube(float cubeDisplacement, float floatMargin, float rotationTime) :
 	mDisplacement(cubeDisplacement), mErrorMargin(floatMargin), mRotateCompletionTime(rotationTime)
@@ -254,6 +254,52 @@ void RubiksCube::findSectionCubes(RubiksSection section, int axis)
 	}
 }
 
+void RubiksCube::findSelectedFaceNormal(glm::vec3 collisionPoint)
+{
+	if (mSelectedCubeID < 0) return;
+
+	glm::vec3 cubePosition = mCubeMap[mSelectedCubeID]->getCurrentPosition();
+	glm::vec3 cubeExtents = mCubeMap[mSelectedCubeID]->getHalfExtents();
+
+	float threshold = 0.00015f;
+
+	for (int i = 0; i < 3; i++)
+	{
+		bool pFaceCollision = collisionPoint[i] >= cubePosition[i] + cubeExtents[i] - threshold && collisionPoint[i] <= cubePosition[i] + cubeExtents[i] + threshold;
+		bool nFaceCollision = collisionPoint[i] <= cubePosition[i] - cubeExtents[i] + threshold && collisionPoint[i] >= cubePosition[i] - cubeExtents[i] - threshold;
+
+		if (pFaceCollision || nFaceCollision)
+		{
+			mSelectedFaceNormal = i;
+			break;
+		}
+	}
+
+	std::cout << "Selected Face Normal: " << mSelectedFaceNormal << std::endl;
+}
+
+void RubiksCube::calculateCameraDirection(float cameraDirection)
+{
+	float restrainedYaw = cameraDirection;
+
+	if (restrainedYaw > 360.0f)
+	{
+		while (restrainedYaw > 360.0f)
+		{
+			restrainedYaw -= 360.0f;
+		}
+	}
+	else if (restrainedYaw < 0.0f)
+	{
+		while (restrainedYaw < 0.0f)
+		{
+			restrainedYaw += 360.0f;
+		}
+	}
+
+	mCameraDirection = restrainedYaw;
+}
+
 void RubiksCube::highlightSection()
 {
 	for (int cubeID : mSelectedSectionIDs)
@@ -454,6 +500,51 @@ void RubiksCube::setupScrambleRotation()
 	mCurrentRotateTime = 0.0f;
 	mbIsRotating = true;
 	findSectionCubes(mScrambleSection, mScrambleAxis);
+}
+
+// TODO: FIGURE OUT HOW TO IMPLEMENT THIS!!!!
+void RubiksCube::processCubeSelection(const Ray& ray, float cameraDirection)
+{
+	// Ensure not scrambling or already being rotated
+	// Auto Complete Rotation????
+	if (mbPlayerRotating || mbIsScrambling) return;
+
+	// If rotation is resetting, select the previously selected cube
+
+	int selectedCube = -1;
+	glm::vec3 end = ray.Origin + ray.Direction * ray.Length;
+	glm::vec3 collisionPoint;
+
+	if (CollisionSystem::Instance()->intersectRayAllAABB(ray.Origin, end, selectedCube, collisionPoint))
+	{
+		selectCube(selectedCube);
+		findSelectedFaceNormal(collisionPoint);
+
+		// If rotating face, select section right away
+
+		calculateCameraDirection(cameraDirection);
+	}
+	else
+	{
+		std::cout << "No cube selected :(" << std::endl;
+	}
+
+}
+
+void RubiksCube::processCubeReleased()
+{
+	if (!mbPlayerRotating) return;
+	if (mSelectedSectionIDs.size() <= 0)
+	{
+		mCubeMap[mSelectedCubeID]->setHighlight(false);
+		mLastSelectedCubeID = -1;
+		mSelectedCubeID = -1;
+		mbPlayerRotating = false;
+		return;
+	}
+
+	// releaseCube();
+	toPreviousState();
 }
 
 void RubiksCube::performSmoothScrambleRotation(float deltaTime)

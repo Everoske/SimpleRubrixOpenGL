@@ -12,6 +12,7 @@
 #include "OrbitCamera.h"
 #include "Cube.h"
 #include "RubiksCube.h"
+#include "Ray.h"
 
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
@@ -22,7 +23,8 @@ float lastX;
 float lastY;
 float cameraSpeed = 5.0f;
 bool mouseInitialized = false;
-bool middleClicked = false;
+bool bMiddleClicked = false;
+bool bLeftClicked = false;
 
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
@@ -46,6 +48,10 @@ void processPlayerSwitchClockwise();
 
 void onRotationCompleted();
 void onScrambleCompleted();
+
+glm::vec3 getNearCursorWorldPosition(glm::mat4 projection, glm::mat4 viewMatrix);
+glm::vec3 getFarCursorWorldPosition(glm::mat4 projection, glm::mat4 viewMatrix);
+Ray getCursorWorldRay(glm::mat4 projection, glm::mat4 viewMatrix, float length = 10.0f);
 
 // Temp Game Settings
 int selectedAxis = 1;
@@ -163,6 +169,20 @@ int main()
 		glm::mat4 view = camera.getViewMatrix();
 		glm::mat4 model;
 		glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+
+		if (!bMiddleClicked && bLeftClicked && !rubiksCube.isPlayerSelecting())
+		{
+			Ray ray = getCursorWorldRay(projection, view, 200.0f);
+			rubiksCube.processCubeSelection(ray, camera.getYaw());
+		}
+		else if (!bMiddleClicked && bLeftClicked && rubiksCube.isPlayerSelecting())
+		{
+
+		}
+		else
+		{
+			rubiksCube.processCubeReleased();
+		}
 
 		glUseProgram(colorShader);
 		glUniformMatrix4fv(glGetUniformLocation(colorShader, "view"), 1, GL_FALSE, &view[0][0]);
@@ -284,7 +304,7 @@ void mouseCallback(GLFWwindow* window, double xPosInput, double yPosInput)
 	lastY = yPos;
 
 	// Only rotate camera is middle mouse clicked
-	if (middleClicked)
+	if (bMiddleClicked)
 		camera.processRotationInput(xOffset, yOffset);
 }
 
@@ -356,13 +376,22 @@ void processInput(GLFWwindow* window)
 	// Can probably do this better :/
 	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_PRESS)
 	{
-		middleClicked = true;
+		bMiddleClicked = true;
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	}
 	else
 	{
-		middleClicked = false;
+		bMiddleClicked = false;
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	}
+
+	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+	{
+		bLeftClicked = true;
+	}
+	else
+	{
+		bLeftClicked = false;
 	}
 }
 
@@ -413,4 +442,46 @@ void onRotationCompleted()
 void onScrambleCompleted()
 {
 
+}
+
+glm::vec3 getNearCursorWorldPosition(glm::mat4 projection, glm::mat4 viewMatrix)
+{
+	float x = (2.0f * lastX) / SCR_WIDTH - 1.0f;
+	float y = 1.0f - (2.0f * lastY) / SCR_HEIGHT;
+
+	glm::vec4 rayStartNDC = glm::vec4(x, y, -1.0f, 1.0f);
+	glm::vec4 rayStartCamera = glm::inverse(projection) * rayStartNDC;
+	rayStartCamera /= rayStartCamera.w;
+	glm::vec4 rayStartWorld = glm::inverse(viewMatrix) * rayStartCamera;
+	rayStartWorld /= rayStartWorld.w;
+	glm::vec3 rayStartWorldPosition = glm::vec3(rayStartWorld.x, rayStartWorld.y, rayStartWorld.z);
+
+	return rayStartWorldPosition;
+}
+
+glm::vec3 getFarCursorWorldPosition(glm::mat4 projection, glm::mat4 viewMatrix)
+{
+	float x = (2.0f * lastX) / SCR_WIDTH - 1.0f;
+	float y = 1.0f - (2.0f * lastY) / SCR_HEIGHT;
+
+	glm::vec4 rayEndNDC = glm::vec4(x, y, 0.0f, 1.0f);
+	glm::vec4 rayEndCamera = glm::inverse(projection) * rayEndNDC;
+	rayEndCamera /= rayEndCamera.w;
+	glm::vec4 rayEndWorld = glm::inverse(viewMatrix) * rayEndCamera;
+	rayEndWorld /= rayEndWorld.w;
+	glm::vec3 rayEndWorldPosition = glm::vec3(rayEndWorld.x, rayEndWorld.y, rayEndWorld.z);
+
+	return rayEndWorldPosition;
+}
+
+// Create a Ray in world space from the mouse cursor
+Ray getCursorWorldRay(glm::mat4 projection, glm::mat4 viewMatrix, float length)
+{
+	glm::vec3 rayStartWorldPosition = getNearCursorWorldPosition(projection, viewMatrix);
+	glm::vec3 rayEndWorldPosition = getFarCursorWorldPosition(projection, viewMatrix);
+
+	glm::vec3 rayDirection = rayEndWorldPosition - rayStartWorldPosition;
+	rayDirection = glm::normalize(rayDirection);
+
+	return Ray(rayStartWorldPosition, rayDirection, length);
 }

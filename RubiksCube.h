@@ -5,6 +5,7 @@
 #include <vector>
 #include <memory>
 #include "Cube.h"
+#include "Ray.h"
 
 enum RubiksSection
 {
@@ -33,8 +34,12 @@ public:
 	bool isRubikCubeSolved();
 
 	bool isRotationInProgress() const { return mbIsRotating; }
+	bool isPlayerSelecting() const { return mSelectedCubeID > -1; }
 	void setRotationCompleteCallback(PFnOnRotationComplete onComplete) { onRotationComplete = onComplete; }
 	void setOnScrambleComplete(PFnOnScrambleComplete onComplete) { onScrambleComplete = onComplete; }
+
+	void processCubeSelection(const Ray& ray, float cameraDirection);
+	void processCubeReleased();
 
 private:
 	CubeMap mCubeMap;
@@ -66,6 +71,7 @@ private:
 	bool mbPlayerRotating = false;
 	int mSelectedAxis = -1;
 	int mSelectedFaceNormal = -1;
+	float mCameraDirection = 0.0f;
 
 	void createCubes();
 
@@ -75,6 +81,8 @@ private:
 
 	void findSectionCubes();
 	void findSectionCubes(RubiksSection section, int axis);
+	void findSelectedFaceNormal(glm::vec3 collisionPoint);
+	void calculateCameraDirection(float cameraDirection);
 	void highlightSection();
 	void clearSectionCubes();
 	void changeSectionCubes();

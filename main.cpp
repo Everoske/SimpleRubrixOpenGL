@@ -17,7 +17,7 @@
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
-OrbitCamera camera = OrbitCamera();
+OrbitCamera camera = OrbitCamera(10.0f);
 
 float lastX;
 float lastY;
@@ -150,7 +150,7 @@ int main()
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
-	RubiksCube rubiksCube = RubiksCube(0.6f, 0.15f, 1.0f);
+	RubiksCube rubiksCube = RubiksCube(1.1f, 0.15f, 1.0f);
 
 	rubiksCube.setOnScrambleComplete(onScrambleCompleted);
 	rubiksCube.setRotationCompleteCallback(onRotationCompleted);

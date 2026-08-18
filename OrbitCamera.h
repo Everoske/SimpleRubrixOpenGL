@@ -15,11 +15,12 @@ public:
 	{
 		mOrbitDist = oDist;
 		calculatePosition();
+		updateCameraVectors();
 	}
 
 	glm::mat4 getViewMatrix()
 	{
-		return glm::lookAt(mPosition, mTargetPosition, mWorldUp);
+		return glm::lookAt(mPosition, mPosition + mFront, mUp);
 	}
 
 	float getYaw() { return mYaw; }
@@ -30,6 +31,7 @@ public:
 		mPitch += pitchInput;
 		mPitch = glm::clamp(mPitch, -89.9f, 89.9f);
 		calculatePosition();
+		updateCameraVectors();
 	}
 
 private:
@@ -39,6 +41,9 @@ private:
 	glm::vec3 mPosition;
 	glm::vec3 mTargetPosition;
 	glm::vec3 mWorldUp;
+	glm::vec3 mFront;
+	glm::vec3 mRight;
+	glm::vec3 mUp;
 	
 	void calculatePosition()
 	{
@@ -50,6 +55,13 @@ private:
 
 		// Get x and y from yaw and y from pitch
 		mPosition = glm::vec3(yawPos.x, pitchPos.y, yawPos.z);
+	}
+
+	void updateCameraVectors()
+	{
+		mFront = glm::normalize(mTargetPosition - mPosition);
+		mRight = glm::normalize(glm::cross(mFront, mWorldUp));
+		mUp = glm::normalize(glm::cross(mRight, mFront));
 	}
 };
 

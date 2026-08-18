@@ -294,7 +294,7 @@ glm::mat4x4 Cube::getTransformationMatrix() const
 {
 	glm::mat4 model = glm::mat4(1.0f);
 	model = glm::translate(model, mCurrentPosition) * mOrientation.toRotationMatrix();
-	model = glm::scale(model, mScale);
+	//model = glm::scale(model, mScale);
 	return model;
 }
 

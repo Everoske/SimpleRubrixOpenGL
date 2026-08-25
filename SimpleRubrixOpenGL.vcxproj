@@ -20,6 +20,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AABBCollider.cpp" />
+    <ClCompile Include="AutoCompleteState.cpp" />
+    <ClCompile Include="AutoResetState.cpp" />
     <ClCompile Include="CollisionSystem.cpp" />
     <ClCompile Include="Cube.cpp" />
     <ClCompile Include="Quaternion.cpp" />
@@ -34,6 +36,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AABBCollider.h" />
+    <ClInclude Include="AutoCompleteState.h" />
+    <ClInclude Include="AutoResetState.h" />
     <ClInclude Include="CollisionSystem.h" />
     <ClInclude Include="Cube.h" />
     <ClInclude Include="OrbitCamera.h" />

@@ -6,7 +6,8 @@
 class ScrambleState : public RubikState
 {
 public:
-	ScrambleState(int scrambleCount) : mTargetScrambleCount{scrambleCount} {}
+	ScrambleState(float scrambleRotationTime, int scrambleCount) : 
+		mTargetRotationTime{scrambleRotationTime}, mTargetScrambleCount{scrambleCount} {}
 
 	virtual void Enter(RubiksCube& cube);
 	virtual void Execute(RubiksCube& cube, float deltaTime);
@@ -17,9 +18,13 @@ private:
 	void performSmoothScrambleRotation(RubiksCube& cube, float deltaTime);
 	void performImmediateScrambleRotation(RubiksCube& cube);
 
+	float mTargetRotationTime;
 	int mTargetScrambleCount;
+
+	float mRotationTimer = 0.0f;
 	int mCurrentScrambleCount = 0;
 	int mScrambleAxis = -1;
+	RubiksSection mScrambleSection;
 };
 
 #endif

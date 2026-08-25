@@ -154,7 +154,6 @@ int main()
 
 	rubiksCube.setOnScrambleComplete(onScrambleCompleted);
 	rubiksCube.setRotationCompleteCallback(onRotationCompleted);
-	rubiksCube.startScrambleSmooth(5);
 
 	while (!glfwWindowShouldClose(window))
 	{

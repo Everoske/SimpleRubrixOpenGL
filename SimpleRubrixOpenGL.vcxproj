@@ -26,6 +26,7 @@
     <ClCompile Include="glad.c" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="RubiksCube.cpp" />
+    <ClCompile Include="ScrambleState.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="colorShader.frag" />
@@ -40,6 +41,7 @@
     <ClInclude Include="Ray.h" />
     <ClInclude Include="RubiksCube.h" />
     <ClInclude Include="RubikState.h" />
+    <ClInclude Include="ScrambleState.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

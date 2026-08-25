@@ -29,11 +29,16 @@ public:
 	void renderCubes(const unsigned int& cubeVAO, const unsigned int& shaderID) const;
 	void update(float deltaTime);
 
-	void startScrambleSmooth(int scrambleCount);
-	void scrambleImmediate();
 	bool isRubikCubeSolved();
 
+	
+	void initiateRotation(int axis, RubiksSection section);
+	void teardownRotation();
+	void rotateSectionPercentage(float targetRadians, float dt, int axis);
+	void rotateSectionImmediate(float radians, int axis);
+
 	bool isRotationInProgress() const { return mbIsRotating; }
+	
 	bool isPlayerSelecting() const { return mSelectedCubeID > -1; }
 	void setRotationCompleteCallback(PFnOnRotationComplete onComplete) { onRotationComplete = onComplete; }
 	void setOnScrambleComplete(PFnOnScrambleComplete onComplete) { onScrambleComplete = onComplete; }
@@ -46,17 +51,9 @@ private:
 	float mDisplacement;
 	float mErrorMargin;
 
-	// Scramble Parameters
-	bool mbIsScrambling = false;
-	int mScrambleAxis = -1;
-	int mTargetScrambleCount = 5;
-	int mCurrentScrambleCount = 0;
-	float mScrambleTargetRotation = 90.0f;
-
 	bool mbIsRotating = false;
 	float mCurrentRotateTime;
 	float mRotateCompletionTime;
-	RubiksSection mScrambleSection;
 
 	PFnOnRotationComplete onRotationComplete;
 	PFnOnScrambleComplete onScrambleComplete;
@@ -87,11 +84,6 @@ private:
 	void clearSectionCubes();
 	void changeSectionCubes();
 
-	// Rotation Methods
-
-	void rotateSectionPercentage(float targetRadians, float dt, int axis);
-	void rotateSectionImmediate(float radians, int axis);
-
 	void toPreviousStateImmediate();
 	void toPreviousState();
 	void updateSectionColliders();
@@ -99,12 +91,6 @@ private:
 	void clampRotatingCubes();
 	float clampCoordinate(float coordinate) const;
 	glm::vec3 clampPosition(const glm::vec3& position) const;
-
-	// Scramble methods
-	void executeScrambleSmooth(float deltaTime);
-	void setupScrambleRotation();
-	void performSmoothScrambleRotation(float deltaTime);
-	void performImmediateScrambleRotation();
 };
 
 

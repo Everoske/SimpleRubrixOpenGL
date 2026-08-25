@@ -26,38 +26,7 @@ void RubiksCube::renderCubes(const unsigned int& cubeVAO, const unsigned int& sh
 
 void RubiksCube::update(float deltaTime)
 {
-	if (mbIsScrambling)
-		executeScrambleSmooth(deltaTime);
-}
-
-void RubiksCube::startScrambleSmooth(int scrambleCount)
-{
-	mCurrentScrambleCount = 0;
-	mTargetScrambleCount = scrambleCount;
-	setupScrambleRotation();
-	mbIsScrambling = true;
-}
-
-void RubiksCube::scrambleImmediate()
-{
-	if (!mbIsScrambling)
-	{
-		mCurrentScrambleCount = 0;
-	}
-	else
-	{
-		mbIsScrambling = false;
-	}
-
-	int remaining = mbIsRotating ? mCurrentScrambleCount : mCurrentScrambleCount + 1;
-	for (remaining; remaining < mTargetScrambleCount; remaining++)
-	{
-		setupScrambleRotation();
-		performImmediateScrambleRotation();
-	}
-
-	if (onScrambleComplete)
-		onScrambleComplete();
+	
 }
 
 bool RubiksCube::isRubikCubeSolved()
@@ -71,6 +40,59 @@ bool RubiksCube::isRubikCubeSolved()
 	}
 
 	return true;
+}
+
+void RubiksCube::initiateRotation(int axis, RubiksSection section)
+{
+	mbIsRotating = true;
+	findSectionCubes(section, axis);
+}
+
+void RubiksCube::teardownRotation()
+{
+	clearSectionCubes();
+	mbIsRotating = false;
+}
+
+void RubiksCube::rotateSectionPercentage(float targetRadians, float dt, int axis)
+{
+	for (int cubeID : mSelectedSectionIDs)
+	{
+		switch (axis)
+		{
+		case 0:
+			mCubeMap.at(cubeID)->rotateXByPercentage(targetRadians, dt);
+			break;
+		case 1:
+			mCubeMap.at(cubeID)->rotateYByPercentage(targetRadians, dt);
+			break;
+		case 2:
+			mCubeMap.at(cubeID)->rotateZByPercentage(targetRadians, dt);
+			break;
+		}
+	}
+}
+
+void RubiksCube::rotateSectionImmediate(float radians, int axis)
+{
+	for (int cubeID : mSelectedSectionIDs)
+	{
+		switch (axis)
+		{
+		case 0:
+			mCubeMap.at(cubeID)->rotateXImmediate(radians);
+			break;
+		case 1:
+			mCubeMap.at(cubeID)->rotateYImmediate(radians);
+			break;
+		case 2:
+			mCubeMap.at(cubeID)->rotateZImmediate(radians);
+			break;
+		}
+	}
+
+	clampRotatingCubes();
+	updateSectionColliders();
 }
 
 void RubiksCube::createCubes()
@@ -232,7 +254,7 @@ void RubiksCube::findSectionCubes()
 void RubiksCube::findSectionCubes(RubiksSection section, int axis)
 {
 	float axisValue = 0.0f;
-	switch (mScrambleSection)
+	switch (section)
 	{
 	case RubiksSection::BACK:
 		axisValue = -1.0f;
@@ -339,47 +361,6 @@ void RubiksCube::changeSectionCubes()
 
 }
 
-void RubiksCube::rotateSectionPercentage(float targetRadians, float dt, int axis)
-{
-	for (int cubeID : mSelectedSectionIDs)
-	{
-		switch (axis)
-		{
-		case 0:
-			mCubeMap.at(cubeID)->rotateXByPercentage(targetRadians, dt);
-			break;
-		case 1:
-			mCubeMap.at(cubeID)->rotateYByPercentage(targetRadians, dt);
-			break;
-		case 2:
-			mCubeMap.at(cubeID)->rotateZByPercentage(targetRadians, dt);
-			break;
-		}
-	}
-}
-
-void RubiksCube::rotateSectionImmediate(float radians, int axis)
-{
-	for (int cubeID : mSelectedSectionIDs)
-	{
-		switch (axis)
-		{
-		case 0:
-			mCubeMap.at(cubeID)->rotateXImmediate(radians);
-			break;
-		case 1:
-			mCubeMap.at(cubeID)->rotateYImmediate(radians);
-			break;
-		case 2:
-			mCubeMap.at(cubeID)->rotateZImmediate(radians);
-			break;
-		}
-	}
-
-	clampRotatingCubes();
-	updateSectionColliders();
-}
-
 void RubiksCube::toPreviousStateImmediate()
 {
 	for (int cubeID : mSelectedSectionIDs)
@@ -396,9 +377,6 @@ void RubiksCube::toPreviousState()
 		return;
 	}
 
-	//mbAutoResetRotation = true;
-	//mAutoFromDegrees = mPlayerRotationInput > 0.0f ? -90.0f : 90.0f;
-	//mCurrentRotateTime = glm::abs(mPlayerRotationInput) / 90.0f * mAutoRotateTime;
 	mPlayerRotationInput = 0.0f;
 }
 
@@ -437,77 +415,12 @@ glm::vec3 RubiksCube::clampPosition(const glm::vec3& position) const
 	return newPos;
 }
 
-
-// Perform all scramble logic including setting up
-void RubiksCube::executeScrambleSmooth(float deltaTime)
-{
-	if (!mbIsScrambling) return;
-
-	if (mbIsRotating)
-	{
-		performSmoothScrambleRotation(deltaTime);
-	}
-	else
-	{
-		if (mCurrentScrambleCount < mTargetScrambleCount)
-		{
-			setupScrambleRotation();
-			performSmoothScrambleRotation(deltaTime);
-		}
-		else
-		{
-			mbIsScrambling = false;
-			onScrambleComplete();
-		}
-	}
-}
-
-void RubiksCube::setupScrambleRotation()
-{
-	// TODO: Try Using PCG32
-	srand(time(0));
-	int newAxis = rand() % 3;
-	int newSection = (rand() % 3) + 1;
-	int oldSection = (int)mScrambleSection;
-
-	if (newAxis == mScrambleAxis && newSection == oldSection)
-	{
-		if (newAxis == newSection)
-		{
-			newAxis = (newAxis + 3) % 3;
-			newSection = ((newSection + 2) % 3) + 1;
-		}
-		else if (newAxis % 2 > 0 && newSection % 2 > 0)
-		{
-			newAxis = (newAxis + 2) % 3;
-			newSection = ((newSection + 4) % 3) + 1;
-		}
-		else if (newAxis % 2 == 0 && newSection % 2 == 0)
-		{
-			newAxis = (newAxis + 1) % 3;
-			newSection = ((newSection + 2) % 3) + 1;
-		}
-		else
-		{
-			int temp = newAxis;
-			newAxis = newSection % 3;
-			newSection = temp + 1;
-		}
-	}
-
-	mScrambleAxis = newAxis;
-	mScrambleSection = static_cast<RubiksSection>(newSection);
-	mCurrentRotateTime = 0.0f;
-	mbIsRotating = true;
-	findSectionCubes(mScrambleSection, mScrambleAxis);
-}
-
 // TODO: FIGURE OUT HOW TO IMPLEMENT THIS!!!!
 void RubiksCube::processCubeSelection(const Ray& ray, float cameraDirection)
 {
 	// Ensure not scrambling or already being rotated
 	// Auto Complete Rotation????
-	if (mbPlayerRotating || mbIsScrambling) return;
+	if (mbPlayerRotating) return;
 
 	// If rotation is resetting, select the previously selected cube
 
@@ -545,26 +458,4 @@ void RubiksCube::processCubeReleased()
 
 	// releaseCube();
 	toPreviousState();
-}
-
-void RubiksCube::performSmoothScrambleRotation(float deltaTime)
-{
-	mCurrentRotateTime += deltaTime;
-	float dt = mCurrentRotateTime / mRotateCompletionTime;
-	
-	if (dt >= 1.0f)
-	{
-		performImmediateScrambleRotation();
-		mCurrentScrambleCount += 1;
-		mbIsRotating = false;
-		return;
-	}
-
-	rotateSectionPercentage(glm::radians(mScrambleTargetRotation), dt, mScrambleAxis);
-}
-
-void RubiksCube::performImmediateScrambleRotation()
-{
-	rotateSectionImmediate(glm::radians(mScrambleTargetRotation), mScrambleAxis);
-	clearSectionCubes();
 }

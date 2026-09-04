@@ -5,7 +5,7 @@ RubikStateMachine::RubikStateMachine(RubiksCube* owner) :
 	mCurrentState{nullptr},
 	mPreviousState{nullptr}
 {
-	mScrambleState = new ScrambleState(0.5f, 5);
+	mScrambleState = new ScrambleState(1.5f, 5);
 }
 
 RubikStateMachine::~RubikStateMachine()

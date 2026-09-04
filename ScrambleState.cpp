@@ -1,14 +1,14 @@
 #include "ScrambleState.h"
 #include <ctime>
 
-void ScrambleState::Enter(RubiksCube& cube)
+void ScrambleState::Enter(RubiksCube* cube)
 {
 	mCurrentScrambleCount = 0;
 }
 
-void ScrambleState::Execute(RubiksCube& cube, float deltaTime)
+void ScrambleState::Execute(RubiksCube* cube, float deltaTime)
 {
-	if (cube.isRotationInProgress())
+	if (cube->isRotationInProgress())
 	{
 		performSmoothScrambleRotation(cube, deltaTime);
 	}
@@ -26,12 +26,12 @@ void ScrambleState::Execute(RubiksCube& cube, float deltaTime)
 	}
 }
 
-void ScrambleState::Exit(RubiksCube& cube)
+void ScrambleState::Exit(RubiksCube* cube)
 {
 	// Any additional cleanup goes here
 }
 
-void ScrambleState::setupScrambleRotation(RubiksCube& cube)
+void ScrambleState::setupScrambleRotation(RubiksCube* cube)
 {
 	// TODO: Try Using PCG32
 	srand(time(0));
@@ -67,10 +67,10 @@ void ScrambleState::setupScrambleRotation(RubiksCube& cube)
 	mScrambleAxis = newAxis;
 	mScrambleSection = static_cast<RubiksSection>(newSection);
 	mRotationTimer = 0.0f;
-	cube.initiateRotation(mScrambleAxis, mScrambleSection);
+	cube->initiateRotation(mScrambleAxis, mScrambleSection);
 }
 
-void ScrambleState::performSmoothScrambleRotation(RubiksCube& cube, float deltaTime)
+void ScrambleState::performSmoothScrambleRotation(RubiksCube* cube, float deltaTime)
 {
 	mRotationTimer += deltaTime;
 	float dt = mRotationTimer / mTargetRotationTime;
@@ -82,11 +82,11 @@ void ScrambleState::performSmoothScrambleRotation(RubiksCube& cube, float deltaT
 		return;
 	}
 
-	cube.rotateSectionPercentage(glm::radians(90.0f), dt, mScrambleAxis);
+	cube->rotateSectionPercentage(glm::radians(90.0f), dt, mScrambleAxis);
 }
 
-void ScrambleState::performImmediateScrambleRotation(RubiksCube& cube)
+void ScrambleState::performImmediateScrambleRotation(RubiksCube* cube)
 {
-	cube.rotateSectionImmediate(glm::radians(90.0f), mScrambleAxis);
-	cube.teardownRotation();
+	cube->rotateSectionImmediate(glm::radians(90.0f), mScrambleAxis);
+	cube->teardownRotation();
 }

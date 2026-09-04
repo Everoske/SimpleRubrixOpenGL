@@ -1,13 +1,13 @@
 #include "AutoResetState.h"
 
-void AutoResetState::Enter(RubiksCube& cube)
+void AutoResetState::Enter(RubiksCube* cube)
 {
 	//mFromDegrees = cube.getPlayerRotationInput() > 0.0f ? -90.0f : 90.0f;
 	//mRotationTimer = glm::abs(cube.getPlayerRotationInput()) / 90.0f * mTargetRotationTime;
 	//cube.setPlayerRotationInput(0.0f);
 }
 
-void AutoResetState::Execute(RubiksCube& cube, float deltaTime)
+void AutoResetState::Execute(RubiksCube* cube, float deltaTime)
 {
 	mRotationTimer -= deltaTime;
 	float dt = mRotationTimer / mTargetRotationTime;
@@ -15,7 +15,7 @@ void AutoResetState::Execute(RubiksCube& cube, float deltaTime)
 	if (dt <= 0.0f)
 	{
 		//cube.rotateSectionImmediate(glm::radians(mFromDegrees));
-		cube.teardownRotation();
+		cube->teardownRotation();
 		// cube.changeState(cube.playState);
 		return;
 	}
@@ -23,7 +23,7 @@ void AutoResetState::Execute(RubiksCube& cube, float deltaTime)
 	//cube.rotateSectionPercentage(glm::radians(mFromDegrees), dt);
 }
 
-void AutoResetState::Exit(RubiksCube& cube)
+void AutoResetState::Exit(RubiksCube* cube)
 {
 	// Handle Exit When Reset is Incomplete
 	// Recalculate and set player rotation amount

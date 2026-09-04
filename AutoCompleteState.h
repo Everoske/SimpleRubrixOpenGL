@@ -8,9 +8,9 @@ class AutoCompleteState : public RubikState
 public:
 	AutoCompleteState(float autoCompleteTime) : mTargetRotationTime{autoCompleteTime} {}
 
-	virtual void Enter(RubiksCube& cube);
-	virtual void Execute(RubiksCube& cube, float deltaTime);
-	virtual void Exit(RubiksCube& cube);
+	virtual void Enter(RubiksCube* cube);
+	virtual void Execute(RubiksCube* cube, float deltaTime);
+	virtual void Exit(RubiksCube* cube);
 
 private:
 	float mTargetRotationTime;

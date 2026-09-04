@@ -9,14 +9,14 @@ public:
 	ScrambleState(float scrambleRotationTime, int scrambleCount) : 
 		mTargetRotationTime{scrambleRotationTime}, mTargetScrambleCount{scrambleCount} {}
 
-	virtual void Enter(RubiksCube& cube);
-	virtual void Execute(RubiksCube& cube, float deltaTime);
-	virtual void Exit(RubiksCube& cube);
+	virtual void Enter(RubiksCube* cube);
+	virtual void Execute(RubiksCube* cube, float deltaTime);
+	virtual void Exit(RubiksCube* cube);
 
 private:
-	void setupScrambleRotation(RubiksCube& cube);
-	void performSmoothScrambleRotation(RubiksCube& cube, float deltaTime);
-	void performImmediateScrambleRotation(RubiksCube& cube);
+	void setupScrambleRotation(RubiksCube* cube);
+	void performSmoothScrambleRotation(RubiksCube* cube, float deltaTime);
+	void performImmediateScrambleRotation(RubiksCube* cube);
 
 	float mTargetRotationTime;
 	int mTargetScrambleCount;

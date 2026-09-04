@@ -8,6 +8,7 @@ RubiksCube::RubiksCube(float cubeDisplacement, float floatMargin, float rotation
 	mDisplacement(cubeDisplacement), mErrorMargin(floatMargin), mRotateCompletionTime(rotationTime)
 {
 	createCubes();
+	mStateMachine = std::make_shared<RubikStateMachine>(this);
 }
 
 void RubiksCube::renderCubes(const unsigned int& cubeVAO, const unsigned int& shaderID) const
@@ -26,7 +27,7 @@ void RubiksCube::renderCubes(const unsigned int& cubeVAO, const unsigned int& sh
 
 void RubiksCube::update(float deltaTime)
 {
-	
+	mStateMachine->update(deltaTime);
 }
 
 bool RubiksCube::isRubikCubeSolved()

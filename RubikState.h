@@ -5,9 +5,10 @@
 
 class RubikState
 {
-	virtual void Enter(RubiksCube&) = 0;
-	virtual void Execute(RubiksCube&, float) = 0;
-	virtual void Exit(RubiksCube&) = 0;
+public:
+	virtual void Enter(RubiksCube*) = 0;
+	virtual void Execute(RubiksCube*, float) = 0;
+	virtual void Exit(RubiksCube*) = 0;
 };
 
 #endif

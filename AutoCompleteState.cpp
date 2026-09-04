@@ -1,6 +1,6 @@
 #include "AutoCompleteState.h"
 
-void AutoCompleteState::Enter(RubiksCube& cube)
+void AutoCompleteState::Enter(RubiksCube* cube)
 {
 	// if (cube.getPlayerInput() > FLT_EPSILON)
 	//     mTargetDegrees = 90.0f;
@@ -10,7 +10,7 @@ void AutoCompleteState::Enter(RubiksCube& cube)
 	mRotationTimer = 0.0f;
 }
 
-void AutoCompleteState::Execute(RubiksCube& cube, float deltaTime)
+void AutoCompleteState::Execute(RubiksCube* cube, float deltaTime)
 {
 	mRotationTimer += deltaTime;
 	float dt = mRotationTimer / mTargetRotationTime;
@@ -18,7 +18,7 @@ void AutoCompleteState::Execute(RubiksCube& cube, float deltaTime)
 	if (dt >= 1.0f)
 	{
 		//cube.rotateSectionImmediate(glm::radians(mTargetDegrees));
-		cube.teardownRotation();
+		cube->teardownRotation();
 		// cube.changeState(cube.playState);
 		return;
 	}
@@ -26,7 +26,7 @@ void AutoCompleteState::Execute(RubiksCube& cube, float deltaTime)
 	//cube.rotateSectionPercentage(glm::radians(mTargetDegrees), dt);
 }
 
-void AutoCompleteState::Exit(RubiksCube& cube)
+void AutoCompleteState::Exit(RubiksCube* cube)
 {
 	// Should only exit once it completes rotation
 }

@@ -6,6 +6,7 @@
 #include <memory>
 #include "Cube.h"
 #include "Ray.h"
+#include "RubikStateMachine.h"
 
 enum RubiksSection
 {
@@ -47,6 +48,8 @@ public:
 	void processCubeReleased();
 
 private:
+	std::shared_ptr<RubikStateMachine> mStateMachine;
+
 	CubeMap mCubeMap;
 	float mDisplacement;
 	float mErrorMargin;

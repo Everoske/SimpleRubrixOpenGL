@@ -173,10 +173,16 @@ int main()
 		{
 			Ray ray = getCursorWorldRay(projection, view, 200.0f);
 			rubiksCube.processCubeSelection(ray, camera.getYaw());
+
+			float x = (2.0f * lastX) / SCR_WIDTH - 1.0f;
+			float y = 1.0f - (2.0f * lastY) / SCR_HEIGHT;
+			rubiksCube.setLastMousePosition(glm::vec2(x, y));
 		}
 		else if (!bMiddleClicked && bLeftClicked && rubiksCube.isPlayerSelecting())
 		{
-
+			float x = (2.0f * lastX) / SCR_WIDTH - 1.0f;
+			float y = 1.0f - (2.0f * lastY) / SCR_HEIGHT;
+			rubiksCube.processMouseInput(glm::vec2(x, y));
 		}
 		else
 		{
@@ -186,8 +192,8 @@ int main()
 		glUseProgram(colorShader);
 		glUniformMatrix4fv(glGetUniformLocation(colorShader, "view"), 1, GL_FALSE, &view[0][0]);
 		glUniformMatrix4fv(glGetUniformLocation(colorShader, "projection"), 1, GL_FALSE, &projection[0][0]);
-
 		glBindVertexArray(VAO);
+
 
 		rubiksCube.update(deltaTime);
 		rubiksCube.renderCubes(VAO, colorShader);

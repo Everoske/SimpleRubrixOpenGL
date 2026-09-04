@@ -47,9 +47,12 @@ public:
 	void setOnScrambleComplete(PFnOnScrambleComplete onComplete) { onScrambleComplete = onComplete; }
 
 	void processCubeSelection(const Ray& ray, float cameraDirection);
+	void processMouseInput(glm::vec2 mousePosition);
 	void processCubeReleased();
 
 	std::shared_ptr<RubikStateMachine> getStateMachine() { return mStateMachine; }
+
+	void setLastMousePosition(glm::vec2 mousePosition) { mLastMousePosition = mousePosition; }
 
 private:
 	std::shared_ptr<RubikStateMachine> mStateMachine;
@@ -76,6 +79,10 @@ private:
 	int mSelectedAxis = -1;
 	int mSelectedFaceNormal = -1;
 	float mCameraDirection = 0.0f;
+
+	// Mouse Movement
+	glm::vec2 mLastMousePosition = glm::vec2(0.0f);
+	glm::vec2 mCurrentMousePosition = glm::vec2(0.0f);
 
 	void createCubes();
 

@@ -447,6 +447,12 @@ void RubiksCube::processCubeSelection(const Ray& ray, float cameraDirection)
 
 }
 
+void RubiksCube::processMouseInput(glm::vec2 mousePosition)
+{
+	mLastMousePosition = mCurrentMousePosition;
+	mCurrentMousePosition = mousePosition;
+}
+
 void RubiksCube::processCubeReleased()
 {
 	if (!mbPlayerRotating) return;

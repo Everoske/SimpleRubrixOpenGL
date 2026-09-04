@@ -46,6 +46,7 @@
     <ClInclude Include="PlayState.h" />
     <ClInclude Include="Quaternion.h" />
     <ClInclude Include="Ray.h" />
+    <ClInclude Include="RotateSliceState.h" />
     <ClInclude Include="RubiksCube.h" />
     <ClInclude Include="RubikState.h" />
     <ClInclude Include="RubikStateMachine.h" />

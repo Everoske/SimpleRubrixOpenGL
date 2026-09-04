@@ -24,7 +24,7 @@ private:
 	float mRotationTimer = 0.0f;
 	int mCurrentScrambleCount = 0;
 	int mScrambleAxis = -1;
-	RubiksSection mScrambleSection;
+	RubiksSection mScrambleSection = RubiksSection::NONE;
 };
 
 #endif

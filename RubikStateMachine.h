@@ -1,7 +1,6 @@
 #ifndef RUBIK_STATE_MACHINE_H
 #define RUBIK_STATE_MACHINE_H
 
-#include <memory>
 #include "RubikState.h"
 #include "ScrambleState.h"
 
@@ -9,23 +8,24 @@ class RubikStateMachine
 {
 private:
 	RubiksCube* mOwner;
-	std::shared_ptr<RubikState> mCurrentState;
-	std::shared_ptr<RubikState> mPreviousState;
+	RubikState* mCurrentState;
+	RubikState* mPreviousState;
 
-	std::shared_ptr<ScrambleState> mScrambleState;
+	ScrambleState* mScrambleState;
 
 public:
 	RubikStateMachine(RubiksCube* owner);
+	~RubikStateMachine();
 
-	void setCurrentState(std::shared_ptr<RubikState> s) { mCurrentState = s; }
-	void setPreviousState(std::shared_ptr<RubikState> s) { mPreviousState = s; }
-	void changeState(std::shared_ptr<RubikState> newState);
+	void setCurrentState(RubikState* state) { mCurrentState = state; }
+	void setPreviousState(RubikState* state) { mPreviousState = state; }
+	void changeState(RubikState* newState);
 
-	bool isInState(const RubikState& st) const;
+	bool isInState(const RubikState& state) const;
 
 	void update(float deltaTime) const;
 
-	std::shared_ptr<ScrambleState> getScrambleState() const { return mScrambleState; }
+	ScrambleState* getScrambleState() const { return mScrambleState; }
 };
 
 

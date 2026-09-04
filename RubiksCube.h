@@ -6,10 +6,12 @@
 #include <memory>
 #include "Cube.h"
 #include "Ray.h"
-#include "RubikStateMachine.h"
+
+class RubikStateMachine;
 
 enum RubiksSection
 {
+	NONE = 0,
 	FRONT = 1,
 	MIDDLE = 2,
 	BACK = 3

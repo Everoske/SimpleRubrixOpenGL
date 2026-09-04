@@ -28,6 +28,7 @@
     <ClCompile Include="glad.c" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="RubiksCube.cpp" />
+    <ClCompile Include="RubikStateMachine.cpp" />
     <ClCompile Include="ScrambleState.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -45,6 +46,7 @@
     <ClInclude Include="Ray.h" />
     <ClInclude Include="RubiksCube.h" />
     <ClInclude Include="RubikState.h" />
+    <ClInclude Include="RubikStateMachine.h" />
     <ClInclude Include="ScrambleState.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

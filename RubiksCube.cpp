@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <ctime>
 #include "CollisionSystem.h"
+#include "RubikStateMachine.h"
 
 RubiksCube::RubiksCube(float cubeDisplacement, float floatMargin, float rotationTime) :
 	mDisplacement(cubeDisplacement), mErrorMargin(floatMargin), mRotateCompletionTime(rotationTime)

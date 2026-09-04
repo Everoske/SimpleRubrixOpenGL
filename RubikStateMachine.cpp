@@ -5,10 +5,17 @@ RubikStateMachine::RubikStateMachine(RubiksCube* owner) :
 	mCurrentState{nullptr},
 	mPreviousState{nullptr}
 {
-	mScrambleState = std::make_shared<ScrambleState>();
+	mScrambleState = new ScrambleState(0.5f, 5);
 }
 
-void RubikStateMachine::changeState(std::shared_ptr<RubikState> newState)
+RubikStateMachine::~RubikStateMachine()
+{
+	mCurrentState = nullptr;
+	mPreviousState = nullptr;
+	delete mScrambleState;
+}
+
+void RubikStateMachine::changeState(RubikState* newState)
 {
 	assert(newState && "RubikStateMachine::changeState: Trying to change to a null state");
 
@@ -18,9 +25,9 @@ void RubikStateMachine::changeState(std::shared_ptr<RubikState> newState)
 	mCurrentState->Enter(mOwner);
 }
 
-bool RubikStateMachine::isInState(const RubikState& st) const
+bool RubikStateMachine::isInState(const RubikState& state) const
 {
-	return typeid(*mCurrentState) == typeid(st);
+	return typeid(*mCurrentState) == typeid(state);
 }
 
 void RubikStateMachine::update(float deltaTime) const

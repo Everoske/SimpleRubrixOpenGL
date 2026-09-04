@@ -1,5 +1,6 @@
 #include "ScrambleState.h"
 #include <ctime>
+#include "RubikStateMachine.h"
 
 void ScrambleState::Enter(RubiksCube* cube)
 {
@@ -21,7 +22,7 @@ void ScrambleState::Execute(RubiksCube* cube, float deltaTime)
 		}
 		else
 		{
-			// cube.changeState(cube.playState);
+			cube->getStateMachine()->changeToPlayState();
 		}
 	}
 }

@@ -24,6 +24,7 @@
     <ClCompile Include="AutoResetState.cpp" />
     <ClCompile Include="CollisionSystem.cpp" />
     <ClCompile Include="Cube.cpp" />
+    <ClCompile Include="PlayState.cpp" />
     <ClCompile Include="Quaternion.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="main.cpp" />
@@ -42,6 +43,7 @@
     <ClInclude Include="CollisionSystem.h" />
     <ClInclude Include="Cube.h" />
     <ClInclude Include="OrbitCamera.h" />
+    <ClInclude Include="PlayState.h" />
     <ClInclude Include="Quaternion.h" />
     <ClInclude Include="Ray.h" />
     <ClInclude Include="RubiksCube.h" />

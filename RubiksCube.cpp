@@ -10,7 +10,7 @@ RubiksCube::RubiksCube(float cubeDisplacement, float floatMargin, float rotation
 {
 	createCubes();
 	mStateMachine = std::make_shared<RubikStateMachine>(this);
-	mStateMachine->setCurrentState(mStateMachine->getScrambleState());
+	mStateMachine->enterScrambleState();
 }
 
 void RubiksCube::renderCubes(const unsigned int& cubeVAO, const unsigned int& shaderID) const

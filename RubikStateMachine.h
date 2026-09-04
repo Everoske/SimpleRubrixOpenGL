@@ -2,7 +2,9 @@
 #define RUBIK_STATE_MACHINE_H
 
 #include "RubikState.h"
-#include "ScrambleState.h"
+
+class ScrambleState;
+class PlayState;
 
 class RubikStateMachine
 {
@@ -12,6 +14,7 @@ private:
 	RubikState* mPreviousState;
 
 	ScrambleState* mScrambleState;
+	PlayState* mPlayState;
 
 public:
 	RubikStateMachine(RubiksCube* owner);
@@ -21,11 +24,12 @@ public:
 	void setPreviousState(RubikState* state) { mPreviousState = state; }
 	void changeState(RubikState* newState);
 
+	void enterScrambleState();
+	void changeToPlayState();
+
 	bool isInState(const RubikState& state) const;
 
 	void update(float deltaTime) const;
-
-	ScrambleState* getScrambleState() const { return mScrambleState; }
 };
 
 

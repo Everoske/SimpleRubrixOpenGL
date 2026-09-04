@@ -1,11 +1,14 @@
 #include "RubikStateMachine.h"
+#include "ScrambleState.h"
+#include "PlayState.h"
 
 RubikStateMachine::RubikStateMachine(RubiksCube* owner) :
 	mOwner{ owner },
 	mCurrentState{nullptr},
 	mPreviousState{nullptr}
 {
-	mScrambleState = new ScrambleState(1.5f, 5);
+	mScrambleState = new ScrambleState(0.5f, 5);
+	mPlayState = new PlayState();
 }
 
 RubikStateMachine::~RubikStateMachine()
@@ -13,6 +16,7 @@ RubikStateMachine::~RubikStateMachine()
 	mCurrentState = nullptr;
 	mPreviousState = nullptr;
 	delete mScrambleState;
+	delete mPlayState;
 }
 
 void RubikStateMachine::changeState(RubikState* newState)
@@ -23,6 +27,16 @@ void RubikStateMachine::changeState(RubikState* newState)
 	mCurrentState->Exit(mOwner);
 	mCurrentState = newState;
 	mCurrentState->Enter(mOwner);
+}
+
+void RubikStateMachine::enterScrambleState()
+{
+	setCurrentState(mScrambleState);
+}
+
+void RubikStateMachine::changeToPlayState()
+{
+	changeState(mPlayState);
 }
 
 bool RubikStateMachine::isInState(const RubikState& state) const

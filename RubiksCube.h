@@ -49,6 +49,8 @@ public:
 	void processCubeSelection(const Ray& ray, float cameraDirection);
 	void processCubeReleased();
 
+	std::shared_ptr<RubikStateMachine> getStateMachine() { return mStateMachine; }
+
 private:
 	std::shared_ptr<RubikStateMachine> mStateMachine;
 
